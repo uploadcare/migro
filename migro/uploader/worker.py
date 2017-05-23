@@ -136,6 +136,7 @@ class Uploader:
                 # Mark file as processed from status check queue.
                 self.status_check_queue.task_done()
                 asyncio.ensure_future(self.event_queue.put(event), loop=loop)
+                return None
 
             # `from_url` timeout.
             # Mark file as processed from status check queue.
