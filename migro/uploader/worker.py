@@ -136,13 +136,11 @@ class Uploader:
                 # Mark file as processed from status check queue.
                 self.status_check_queue.task_done()
                 asyncio.ensure_future(self.event_queue.put(event), loop=loop)
-                return None
 
             # `from_url` timeout.
             # Mark file as processed from status check queue.
             self.status_check_queue.task_done()
             event['type'] = Events.DOWNLOAD_ERROR
-            event['error'] = 'status check timeout'
             asyncio.ensure_future(self.event_queue.put(event), loop=loop)
             return None
 
@@ -152,7 +150,7 @@ class Uploader:
             event = await self.event_queue.get()
             print('EVENT: ', event)
             event_type = event['type']
-            callbacks = self.events_callbacks[event_type]
+            callbacks = self._events_callbacks[event_type]
             for callback in callbacks:
                 if asyncio.iscoroutinefunction(callback):
                     asyncio.ensure_future(callback(event), loop=self.loop)
