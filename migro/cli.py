@@ -12,7 +12,6 @@ import os
 # Add migro directory to PATH.
 parent = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(os.path.realpath(parent))
-sys.path.append('/Users/andreybaryshnikov/workspace/migro')
 
 import click
 from migro import settings
