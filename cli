@@ -6,54 +6,37 @@
     Command line interface.
 
 """
-import sys
 import os
+import sys
 
 # Add migro directory to PATH.
 parent = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(os.path.realpath(parent))
 
+import asyncio
 import click
-from migro import settings
-from migro import __version__
+import signal
+
+from migro import settings, __version__
+from migro.uploader.worker import Uploader
+from migro.uploader.utils import loop, session
 
 
-# def ask_exit():
-#     """Loop and tasks shutdown callback."""
-#     print("EXIT")
-#     loop.stop()
-#     pending = asyncio.Task.all_tasks()
-#     for task in pending:
-#         task.cancel()
-#
-#     # Run loop until tasks done.
-#     f = asyncio.gather(*pending)
-#     f.cancel()
-#     loop.run_until_complete(f)
-#
-# # Register SIGINT and SIGTERM signals for shutdown.
-# for signame in ('SIGINT', 'SIGTERM'):
-#     loop.add_signal_handler(getattr(signal, signame), ask_exit)
-#
-# urls = [
-#             'https://ucarecdn.com/9e383a6b-35a5-4612-ad86-5f84c64a152b/',
-#             'https://ucarecdn.com/1e8223ff-5c64-4660-8841-e39a83bd408c/',
-#             'https://ucarecdn.com/6a200842-df2e-4dd6-9bcd-060237c99d44/',
-#             'https://ucarecdn.com/0fc29660-becc-416d-a4da-85c68ed452d3/',
-#             'https://ucarecdn.com/03452277-724a-40ff-8ff8-3d50801fcbe8/'
-#         ]
-# uploader = Uploader(loop=loop)
-#
-# try:
-#     loop.run_until_complete(uploader.process(urls))
-# except KeyboardInterrupt:
-#     pass
-# finally:
-#     session.close()
-#     uploader.shutdown()
-#
-# loop.close()
-#
+def ask_exit():
+    """Loop and tasks shutdown callback."""
+    loop.stop()
+    pending = asyncio.Task.all_tasks()
+    for task in pending:
+        task.cancel()
+
+    # Run loop until tasks done.
+    f = asyncio.gather(*pending)
+    f.cancel()
+    loop.run_until_complete(f)
+
+# Register SIGINT and SIGTERM signals for shutdown.
+for signame in ('SIGINT', 'SIGTERM'):
+    loop.add_signal_handler(getattr(signal, signame), ask_exit)
 
 
 def show_version(ctx, param, value):
@@ -82,7 +65,7 @@ show_version_option = click.option(
     is_eager=True,
     help="Show utility version and quit.")
 
-public_key_option = click.argument(
+public_key_arg = click.argument(
     'public_key',
     required=True,
     # help='Your Uploadcare project public key.',
@@ -126,15 +109,16 @@ status_check_interval_option = click.option(
          'one uploaded file.',
     type=float)
 
-input_file_option = click.argument(
+input_file_arg = click.argument(
     'input_file',
     required=True,
     # help='Input file with files IDs/URLs to migrate.',
-    type=click.File('rb')
+    type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                    readable=True)
 )
 
 output_file_option = click.option(
-    '-o', '--output',
+    '-o', '--output_file',
     help='Path to output file for results.',
     show_default=True,
     default='migro_result.txt',
@@ -145,16 +129,38 @@ output_file_option = click.option(
 @click.command(help='Migrate your files to Uploadcare.')
 @show_version_option
 @help_option
-@public_key_option
-@input_file_option
+@public_key_arg
+@input_file_arg
 @output_file_option
 @upload_base_option
 @from_url_timeout_option
+@max_concurrent_upload_option
 @max_concurrent_checks_option
 @status_check_interval_option
-def cli(**options):
+def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
+        max_uploads, max_checks, check_interval):
     """Migrate your files to Uploadcare."""
-    print(options, 'HELLO')
+    # Set settings from the cli args.
+    settings.PUBLIC_KEY = public_key
+    settings.UPLOAD_BASE = upload_base
+    settings.FROM_URL_TIMEOUT = from_url_timeout
+    settings.MAX_CONCURRENT_UPLOADS = max_uploads
+    settings.MAX_CONCURRENT_CHECKS = max_checks
+    settings.STATUS_CHECK_INTERVAL = check_interval
+
+    with open(input_file, 'r') as f:
+        urls = f.readlines()
+
+    uploader = Uploader(loop=loop)
+    try:
+        loop.run_until_complete(uploader.process(urls))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        session.close()
+        uploader.shutdown()
+
+    loop.close()
 
 
 if __name__ == '__main__':
