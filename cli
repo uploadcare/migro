@@ -15,11 +15,18 @@ sys.path.append(os.path.realpath(parent))
 
 import asyncio
 import click
+from tqdm import tqdm
 import signal
 
 from migro import settings, __version__
-from migro.uploader.worker import Uploader
+from migro.uploader.worker import Uploader, Events
 from migro.uploader.utils import loop, session
+
+async def wakeup():
+    """Wakeup workaround for windows users.
+    See http://bugs.python.org/issue23057 for details."""
+    while True:
+        await asyncio.sleep(1)
 
 
 def ask_exit():
@@ -114,16 +121,14 @@ input_file_arg = click.argument(
     required=True,
     # help='Input file with files IDs/URLs to migrate.',
     type=click.Path(exists=True, file_okay=True, dir_okay=False,
-                    readable=True)
-)
+                    readable=True))
 
 output_file_option = click.option(
     '-o', '--output_file',
     help='Path to output file for results.',
     show_default=True,
     default='migro_result.txt',
-    type=click.File('wb'),
-)
+    type=click.File('wb'))
 
 
 @click.command(help='Migrate your files to Uploadcare.')
@@ -151,12 +156,26 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
     with open(input_file, 'r') as f:
         urls = f.readlines()
 
+    bar = tqdm(desc='Files processed',
+               total=len(urls),
+               miniters=1,
+               unit='file',
+               dynamic_ncols=True,
+               position=1,
+               maxinterval=3)
+    def update_bar(_): 'UPDATE CALLED', bar.update()
+
     uploader = Uploader(loop=loop)
+    uploader.on(Events.DOWNLOAD_COMPLETE, Events.UPLOAD_ERROR,
+                Events.DOWNLOAD_ERROR,
+                callback=update_bar)
+
     try:
         loop.run_until_complete(uploader.process(urls))
     except KeyboardInterrupt:
         pass
     finally:
+        bar.close()
         session.close()
         uploader.shutdown()
 
