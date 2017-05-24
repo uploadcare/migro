@@ -12,6 +12,7 @@ class Events(Enum):
     """Available events."""
     UPLOAD_ERROR = 'UPLOAD_ERROR'
     UPLOAD_COMPLETE = 'UPLOAD_COMPLETE'
+    # Download on Uploadcare side.
     DOWNLOAD_ERROR = 'DOWNLOAD_ERROR'
     DOWNLOAD_COMPLETE = 'DOWNLOAD_COMPLETE'
 
@@ -146,19 +147,6 @@ class Uploader:
             asyncio.ensure_future(self.event_queue.put(event), loop=loop)
             return None
 
-    async def process_events(self):
-        """Events process coroutine."""
-        while True:
-            event = await self.event_queue.get()
-            event_type = event['type']
-            callbacks = self._events_callbacks[event_type]
-            for callback in callbacks:
-                if asyncio.iscoroutinefunction(callback):
-                    asyncio.ensure_future(callback(event), loop=self.loop)
-                else:
-                    callback(event)
-        return None
-
     async def process_upload_queue(self):
         """Upload queue process coroutine."""
         while True:
@@ -202,12 +190,26 @@ class Uploader:
         for consumer in self._consumers:
             consumer.cancel()
         try:
+            # Wait till started consumers tasks will finish.
             self.loop.run_until_complete(asyncio.gather(*self._consumers))
         except asyncio.CancelledError:
             pass
 
         # Remove all the queues consumers.
         self._consumers = []
+        return None
+
+    async def process_events(self):
+        """Events process coroutine."""
+        while True:
+            event = await self.event_queue.get()
+            event_type = event['type']
+            callbacks = self._events_callbacks[event_type]
+            for callback in callbacks:
+                if asyncio.iscoroutinefunction(callback):
+                    asyncio.ensure_future(callback(event), loop=self.loop)
+                else:
+                    callback(event)
         return None
 
     def on(self, *events, callback):
@@ -240,8 +242,8 @@ class Uploader:
                 raise TypeError('Unknown event')
 
             if event in self._events_callbacks:
-                callbacks = self._events_callbacks[event]
                 if callback:
+                    callbacks = self._events_callbacks[event]
                     if callback in callbacks:
                         callbacks.remove(callback)
                 else:
