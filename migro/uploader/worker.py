@@ -122,26 +122,27 @@ class Uploader:
                 if response.status != 200:
                     event['type'] = Events.DOWNLOAD_ERROR
                     file.error = 'Request error: {0}'.format(response.status)
+                    break
                 else:
                     result = await response.json()
                     if 'error' in result:
                         event['type'] = Events.DOWNLOAD_ERROR
                         file.error = result['error']
+                        break
                     elif result['status'] == 'success':
                         event['type'] = Events.DOWNLOAD_COMPLETE
                         file.data = result
                         file.uuid = result['uuid']
+                        break
                     else:
                         await asyncio.sleep(settings.STATUS_CHECK_INTERVAL)
-                # Mark file as processed from status check queue.
-                self.status_check_queue.task_done()
-                asyncio.ensure_future(self.event_queue.put(event), loop=loop)
-                return None
+            else:
+                # `from_url` timeout.
+                event['type'] = Events.DOWNLOAD_ERROR
+                file.error = 'Status check timeout.'
 
-            # `from_url` timeout.
             # Mark file as processed from status check queue.
             self.status_check_queue.task_done()
-            event['type'] = Events.DOWNLOAD_ERROR
             asyncio.ensure_future(self.event_queue.put(event), loop=loop)
             return None
 
@@ -149,7 +150,6 @@ class Uploader:
         """Events process coroutine."""
         while True:
             event = await self.event_queue.get()
-            print('EVENT: ', event)
             event_type = event['type']
             callbacks = self._events_callbacks[event_type]
             for callback in callbacks:
@@ -210,7 +210,7 @@ class Uploader:
         self._consumers = []
         return None
 
-    def on(self, event, callback):
+    def on(self, *events, callback):
         """Register `callback` for `event`.
         
         The callbacks will be executed in registration order.
@@ -221,27 +221,29 @@ class Uploader:
         :param callback: Callback to register. 
         
         """
-        if event not in self.EVENTS:
-            raise TypeError('Unknown event')
+        for event in events:
+            if event not in self.EVENTS:
+                raise TypeError('Unknown event')
 
-        self._events_callbacks[event].apped(callback)
+            self._events_callbacks[event].append(callback)
         return None
 
-    def off(self, event, callback=None):
+    def off(self, *events, callback=None):
         """Unregister specific callback or all callbacks for event.
         
         :param event: Event instance.
         :param callback: Callback to unregister.
         
         """
-        if event not in self.EVENTS:
-            raise TypeError('Unknown event')
+        for event in events:
+            if event not in self.EVENTS:
+                raise TypeError('Unknown event')
 
-        if event in self._events_callbacks:
-            callbacks = self._events_callbacks[event]
-            if callback:
-                if callback in callbacks:
-                    callbacks.remove(callback)
-            else:
-                del self._events_callbacks[event]
+            if event in self._events_callbacks:
+                callbacks = self._events_callbacks[event]
+                if callback:
+                    if callback in callbacks:
+                        callbacks.remove(callback)
+                else:
+                    del self._events_callbacks[event]
         return None
