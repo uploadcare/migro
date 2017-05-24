@@ -42,13 +42,9 @@ instance/
 .scrapy
 docs/_build/
 target/
-.ipynb_checkpoints
 .python-version
-celerybeat-schedule
 *.sage.py
 .env
 .venv
 venv/
 ENV/
-.spyderproject
-.ropeproject
