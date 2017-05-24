@@ -159,7 +159,7 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
         urls = f.readlines()
     urls = [build_url(url.strip()) for url in urls]
 
-    bar = tqdm(desc='Files processed',
+    bar = tqdm(desc='Upload progress',
                total=len(urls),
                miniters=1,
                unit='file',
@@ -200,10 +200,12 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
         for file in failed:
             output.write('{0} {1} {2}\n'.format(file.url, 'failed',
                                                 file.error))
-    print('\nAll files have been process, output file with results '
-          'placed here: {0}'.format(output_file))
-    print('Thank you for using Uploadcare migration tool!\n'
-          'Hope you will enjoy our service.')
+
+    click.echo('\n\nAll files have been process, output file with results '
+               'placed here: {0}'.format(output_file))
+    click.echo('Thank you for using Uploadcare migration tool!')
+    click.echo('We hope that you will enjoy our service.')
+    click.echo('')
 
 if __name__ == '__main__':
     cli()
