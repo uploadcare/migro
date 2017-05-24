@@ -21,6 +21,8 @@ import signal
 from migro import settings, __version__
 from migro.uploader.worker import Uploader, Events
 from migro.uploader.utils import loop, session
+from migro.filestack.utils import build_url
+
 
 async def wakeup():
     """Wakeup workaround for windows users.
@@ -125,10 +127,10 @@ input_file_arg = click.argument(
 
 output_file_option = click.option(
     '-o', '--output_file',
-    help='Path to output file for results.',
+    help='Path where to place output file with results.',
     show_default=True,
     default='migro_result.txt',
-    type=click.File('wb'))
+    type=click.Path(file_okay=True, dir_okay=False, writable=True))
 
 
 @click.command(help='Migrate your files to Uploadcare.')
@@ -155,6 +157,7 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
 
     with open(input_file, 'r') as f:
         urls = f.readlines()
+    urls = [build_url(url.strip()) for url in urls]
 
     bar = tqdm(desc='Files processed',
                total=len(urls),
@@ -163,12 +166,20 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
                dynamic_ncols=True,
                position=1,
                maxinterval=3)
+    failed = []
+    successful = []
+
     def update_bar(_): 'UPDATE CALLED', bar.update()
+    def append_successful(event): successful.append(event['file'])
+    def append_failed(event): failed.append(event['file'])
 
     uploader = Uploader(loop=loop)
     uploader.on(Events.DOWNLOAD_COMPLETE, Events.UPLOAD_ERROR,
                 Events.DOWNLOAD_ERROR,
                 callback=update_bar)
+    uploader.on(Events.UPLOAD_ERROR, Events.DOWNLOAD_ERROR,
+                callback=append_failed)
+    uploader.on(Events.DOWNLOAD_COMPLETE, callback=append_successful)
 
     try:
         loop.run_until_complete(uploader.process(urls))
@@ -181,6 +192,14 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
 
     loop.close()
 
+    with open(output_file, 'w') as output:
+        for file in successful:
+            ucare_url = 'https://ucarecdn.com/{0}/'.format(file.uuid)
+            output.write('{0} {1} {2}\n'.format(file.url, 'success',
+                                                ucare_url))
+        for file in failed:
+            output.write('{0} {1} {2}\n'.format(file.url, 'failed',
+                                                file.error))
 
 if __name__ == '__main__':
     cli()
