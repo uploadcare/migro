@@ -196,11 +196,11 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
     with open(output_file, 'w') as output:
         for file in successful:
             ucare_url = 'https://ucarecdn.com/{0}/'.format(file.uuid)
-            output.write('{0} {1} {2}\n'.format(file.url, 'success',
-                                                ucare_url))
+            output.write('{0}\t{1}\t{2}\n'.format(file.url, 'success',
+                                                  ucare_url))
         for file in failed:
-            output.write('{0} {1} {2}\n'.format(file.url, 'failed',
-                                                file.error))
+            output.write('{0}\t{1}\t{2}\n'.format(file.url, 'failed',
+                                                  file.error))
 
     click.echo('\n\nAll files have been process, output file with results '
                'placed here: {0}'.format(output_file))
