@@ -73,7 +73,7 @@ And utility output will be like this:
 
 #### Alternatives
 
-You can use any of our libraries we have on github for different programming languages.
+You can use any of our libraries we have on github for different programming languages to migrate your files from anywhere you want.
 
 Full list of libraries you can find at https://uploadcare.com/documentation/libs/
 
