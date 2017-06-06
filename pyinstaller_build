@@ -1,1 +1,0 @@
-pyinstaller --onefile --name uploadcare-migro --nowindow --noupx cli
