@@ -3,8 +3,7 @@
 Migro is a migration tool from Uploadcare team. It helps you to migrate your files 
 from other cloud file management services such as Filestack, Cloudinary and etc.
 
-Currently we support migration from Filestack but you can migrate from any service
- - just provide files URLs for utility and that's it.
+Currently we support migration from Filestack but you can migrate from any service - you just need only files URLs for utility to import.
  
 #### Usage
 
@@ -67,7 +66,7 @@ Like this:
     
 And utility output will be like this:
     
-    Upload progress: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
+    Upload progress: 100%|████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
     All files have been process, output file with results placed here: /tmp/migro-result.txt
 
 
@@ -77,4 +76,12 @@ You can use any of our libraries we have on github for different programming lan
 
 Full list of libraries you can find at https://uploadcare.com/documentation/libs/
 
-#### Binaries/Download
+#### Installation
+
+   This utility require python 3.5.
+
+   In order to install `migro`, simply run:
+   
+   `pip install uploadcare-migro`
+    
+  
