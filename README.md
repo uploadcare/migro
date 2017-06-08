@@ -39,8 +39,12 @@ from other services too: you'll just need to provide your file URLs for import.
   --upload_base TEXT              Base URL for uploads.
                                   [default: https://upload.uploadcare.com/]
                                   
-  --from_url_timeout FLOAT        Number of seconds before a file gets
-                                  processed via `from_url`.
+  --from_url_timeout FLOAT        Maximum number of seconds for uploading
+                                  a single file via `from_url`. If this
+                                  threshold gets exceeded, a file is
+                                  considered not loaded. Increase this
+                                  timeout when expecting to get larger
+                                  files via `from_url`.
                                   [default: 30]
                                   
   --max_uploads INTEGER           Maximum number of upload requests
@@ -48,7 +52,7 @@ from other services too: you'll just need to provide your file URLs for import.
                                   [default: 20]
                                   
   --max_checks INTEGER            Maximum number of `from_url`
-                                  status check requests running in `parallel`.
+                                  status check requests running in 'parallel'.
                                   [default: 20]
                                   
   --check_interval FLOAT          Number of seconds in between status
@@ -85,7 +89,7 @@ Here's how you run the utility:
 And that's what you get:
     
     Upload progress: 100%|████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
-    All files have been processed, results of the operation are here: /tmp/migro-result.txt
+    All files have been processed, output URLs were written to: /tmp/migro-result.txt
 
 ## Alternatives
 
