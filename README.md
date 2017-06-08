@@ -1,19 +1,30 @@
-# MIGRO - uploadcare migration tool
+# MIGRO — Uploadcare migration tool
 
-Migro is a migration tool from Uploadcare team. It helps you to migrate your files 
-from other cloud file management services such as Filestack, Cloudinary and etc.
+Migro helps you migrate to Uploadcare from other cloud file management
+services like Filestack, Cloudinary, etc.
+Currently, we support migrating from Filestack, but you can migrate
+from other services too: you'll just need to provide your file URLs for import.
 
-Currently we support migration from Filestack but you can migrate from any service - you just need only files URLs for utility to import.
- 
-#### Usage
+## Installation
+
+   This utility requires Python 3.5.
+
+   In order to install `migro`, simply run:
+   
+   `pip install uploadcare-migro`
+
+
+## Usage
 
     $ > migro <PUBLIC_KEY> <INPUT_FILE>
     
  Where:
   
-  `<PUBLIC_KEY>` - Your Uploadcare project public key.
+  `<PUBLIC_KEY>` — Your Uploadcare project
+  [public key.](https://uploadcare.com/documentation/keys/)
   
-  `<INPUT_FILE>` - Text file contains list of file URL's to upload to Uploadcare.
+  `<INPUT_FILE>` — A text file containing a list of file URLs
+  to be uploaded to your Uploadcare project.
     
  Other options:
   
@@ -22,66 +33,66 @@ Currently we support migration from Filestack but you can migrate from any servi
   
   -h, --help                      Show this help and quit.
   
-  -o, --output_file PATH          Path where to place output file with
-                                  results.  [default: migro_result.txt]
+  -o, --output_file PATH          Path to a Migro output file.
+                                  [default: migro_result.txt]
                                   
-  --upload_base TEXT              Uploadcare upload base URL.  [default:
-                                  https://upload.uploadcare.com/]
+  --upload_base TEXT              Base URL for uploads.
+                                  [default: https://upload.uploadcare.com/]
                                   
-  --from_url_timeout FLOAT        Number of seconds to wait till the file will
-                                  be processed by `from_url` upload.
+  --from_url_timeout FLOAT        Maximum number of seconds for uploading
+                                  a single file via `from_url`. If this
+                                  threshold gets exceeded, a file is
+                                  considered not loaded. Increase this
+                                  timeout when expecting to get larger
+                                  files via `from_url`.
                                   [default: 30]
                                   
-  --max_uploads INTEGER           Maximum number of 'parallel' upload
-                                  requests.  [default: 20]
+  --max_uploads INTEGER           Maximum number of upload requests
+                                  running in 'parallel'.
+                                  [default: 20]
                                   
-  --max_checks INTEGER            Maximum number of 'parallel' `from_url`
-                                  status check requests.  [default: 20]
+  --max_checks INTEGER            Maximum number of `from_url`
+                                  status check requests running in 'parallel'.
+                                  [default: 20]
                                   
-  --check_interval FLOAT          Number of seconds to wait between each
-                                  requests of status check for one uploaded
-                                  file.
+  --check_interval FLOAT          Number of seconds in between status
+                                  check requests.
                                   
   ```              
-#### How does it work
 
-The migration process is very simple - you pass the list of files URL's(or Filestack file handles)
-you want to migrate to Uploadcare to the utility and they will be uploaded to your Uploadcare project. That's it.
+## How migration works
 
-Utility do not download any files it's just use Uploadcare upload API - from url - https://uploadcare.com/documentation/upload/#from-url
-to download files to Uploadcare site.
+The migration itself is fairly simple: you provide a list of file URLs
+or Filestack file handlers, and those files get uploaded to your Uploadcare
+project. That's it.
+Migro does not download any files. It makes use of the
+[Uploading API](https://uploadcare.com/documentation/upload/).
+Specifically, it utilizes the `From URL`
+[method](https://uploadcare.com/documentation/upload/#from-url).
 
+As a result, you'll get a listing of all the uploaded files.
+For every processed file, you're also getting its status and errors,
+in case there were any.
 
-As the result you will get file which will contains list of uploaded files and their statuses and errors(if any).
-
-Like this:
+For instance:
 
     https://ucarecdn.com/9e383a6b-35a5-4612-ad86-5f84c64a152b/ success https://ucarecdn.com/d8f8de4b-f92e-41a0-b7f9-28fd4baad9ae/
     https://ucarecdn.com/6a200842-df2e-4dd6-9bcd-060237c99d44/ success https://ucarecdn.com/4a03f3d4-2bd3-456e-89a5-008190980248/
-    https://ucarecdn.com/03452277-724a-40ff-8ff8-3d50801fcbe8/ failed  Uploading of these files types is not allowed on your current plan. 
+    https://ucarecdn.com/03452277-724a-40ff-8ff8-3d50801fcbe8/ failed  Uploading files of that type is not allowed on your current plan. 
 
-#### Examples
+## Examples
+
+Here's how you run the utility:
 
     $ > migro 9a598e2a47fe961ea412 fileslist.txt -output_file /tmp/migro-result.txt
     
-And utility output will be like this:
+And that's what you get:
     
     Upload progress: 100%|████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
-    All files have been process, output file with results placed here: /tmp/migro-result.txt
+    All files have been processed, output URLs were written to: /tmp/migro-result.txt
 
+## Alternatives
 
-#### Alternatives
-
-You can use any of our libraries we have on github for different programming languages to migrate your files from anywhere you want.
-
-Full list of libraries you can find at https://uploadcare.com/documentation/libs/
-
-#### Installation
-
-   This utility require python 3.5.
-
-   In order to install `migro`, simply run:
-   
-   `pip install uploadcare-migro`
-    
-  
+You can use our
+[libs](https://uploadcare.com/documentation/libs/)
+to migrate your files from any source.

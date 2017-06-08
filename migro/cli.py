@@ -86,7 +86,7 @@ upload_base_option = click.option(
     '-ub', '--upload_base',
     default=settings.UPLOAD_BASE,
     show_default=True,
-    help='Uploadcare upload base URL.',
+    help='Base URL for uploads.',
     type=str)
 
 from_url_timeout_option = click.option(
@@ -101,21 +101,21 @@ max_concurrent_upload_option = click.option(
     '-mu', '--max_uploads',
     default=settings.MAX_CONCURRENT_UPLOADS,
     show_default=True,
-    help='Maximum number of \'parallel\' upload requests.',
+    help='Maximum number of upload requests running in \'parallel\'.',
     type=int)
 
 max_concurrent_checks_option = click.option(
     '-mc', '--max_checks',
     default=settings.MAX_CONCURRENT_CHECKS,
     show_default=True,
-    help='Maximum number of \'parallel\' `from_url` status check requests.',
+    help='Maximum number of `from_url` status check requests running in '
+         '\'parallel\'.',
     type=int)
 
 status_check_interval_option = click.option(
     '-ci', '--check_interval',
     default=settings.STATUS_CHECK_INTERVAL,
-    help='Number of seconds to wait between each requests of status check for '
-         'one uploaded file.',
+    help='Number of seconds in between status check requests.',
     type=float)
 
 input_file_arg = click.argument(
@@ -127,7 +127,7 @@ input_file_arg = click.argument(
 
 output_file_option = click.option(
     '-o', '--output_file',
-    help='Path where to place output file with results.',
+    help='Path to a Migro output file.',
     show_default=True,
     default='migro_result.txt',
     type=click.Path(file_okay=True, dir_okay=False, writable=True,
@@ -202,10 +202,10 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
             output.write('{0}\t{1}\t{2}\n'.format(file.url, 'failed',
                                                   file.error))
 
-    click.echo('\n\nAll files have been process, output file with results '
-               'placed here: {0}'.format(output_file))
-    click.echo('Thank you for using Uploadcare migration tool!')
-    click.echo('We hope that you will enjoy our service.')
+    click.echo('\n\nAll files have been processed, output URLs were written to: '
+               'are here: {0}'.format(output_file))
+    click.echo('Thanks for your interest in Uploadcare.')
+    click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')
 
 if __name__ == '__main__':
