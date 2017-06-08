@@ -202,10 +202,10 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
             output.write('{0}\t{1}\t{2}\n'.format(file.url, 'failed',
                                                   file.error))
 
-    click.echo('\n\nAll files have been processed, results of the operation '
+    click.echo('\n\nAll files have been processed, output URLs were written to: '
                'are here: {0}'.format(output_file))
-    click.echo('Thank you for using Uploadcare migration tool!')
-    click.echo('We hope that you will enjoy our service.')
+    click.echo('Thanks for your interest in Uploadcare.')
+    click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')
 
 if __name__ == '__main__':
