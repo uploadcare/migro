@@ -24,24 +24,11 @@ from migro.uploader.utils import loop, session
 from migro.filestack.utils import build_url
 
 
-async def wakeup():
-    """Wakeup workaround for windows users.
-    See http://bugs.python.org/issue23057 for details."""
-    while True:
-        await asyncio.sleep(1)
-
-
 def ask_exit():
     """Loop and tasks shutdown callback."""
-    loop.stop()
     pending = asyncio.Task.all_tasks()
     for task in pending:
         task.cancel()
-
-    # Run loop until tasks done.
-    f = asyncio.gather(*pending)
-    f.cancel()
-    loop.run_until_complete(f)
 
 # Register SIGINT and SIGTERM signals for shutdown.
 for signame in ('SIGINT', 'SIGTERM'):
@@ -169,8 +156,9 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
                maxinterval=3)
     failed = []
     successful = []
+    cancelled = False
 
-    def update_bar(_): 'UPDATE CALLED', bar.update()
+    def update_bar(_): bar.update()
     def append_successful(event): successful.append(event['file'])
     def append_failed(event): failed.append(event['file'])
 
@@ -184,13 +172,14 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
 
     try:
         loop.run_until_complete(uploader.process(urls))
-    except KeyboardInterrupt:
-        pass
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        cancelled = True
     finally:
         bar.close()
         session.close()
         uploader.shutdown()
 
+    loop.stop()
     loop.close()
 
     with open(output_file, 'w') as output:
@@ -202,8 +191,14 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
             output.write('{0}\t{1}\t{2}\n'.format(file.url, 'failed',
                                                   file.error))
 
-    click.echo('\n\nAll files have been processed, output URLs were written to: '
-               'are here: {0}'.format(output_file))
+    if cancelled:
+        click.echo('\n\nFile uploading has been cancelled!!')
+        num_files = 'Some({0})'.format(len(successful + failed))
+    else:
+        num_files = 'All'
+
+    click.echo('\n\n{0} files have been processed, output URLs were written '
+               'to: are here: {1}'.format(num_files, output_file))
     click.echo('Thanks for your interest in Uploadcare.')
     click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')
