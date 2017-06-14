@@ -1,3 +1,11 @@
+"""
+
+    migro.uploader.worker
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    File uploader worker.
+
+"""
 import time
 
 import asyncio
