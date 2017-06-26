@@ -27,7 +27,7 @@ from other services too: you'll just need to provide your file URLs for import.
   to be uploaded to your Uploadcare project.
     
  Other options:
-  
+
  ```
   -v, --version                   Show utility version and quit.
   

@@ -19,7 +19,7 @@
           handles.push($(item).attr('href'));
         });
         var content = (b64EncodeUnicode(handles.join('\n')));
-        jQuery('h4.subheading').html('<a id="download-files-list" href="data:application/octet-stream;charset=utf-8;base64,' + content + '">Download files lists</a>')
+        jQuery('h4.subheading').html('<a id="download-files-list" href="data:application/octet-stream;charset=utf-8;base64,' + content + '">Download files list</a>')
       }
     }
   };
