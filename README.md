@@ -59,6 +59,28 @@ from other services too: you'll just need to provide your file URLs for import.
                                   check requests.
                                   
   ```              
+ 
+## Output file format
+The output file format is very simple.
+For every file URL or Filestack file handle there is 3 columns divided by '\t'(tab).
+
+First column - URL of Filestack handle iteself. 
+
+Second column - upload operation status - `succes` or `failed`.
+
+Third column - The Uploadcare URL of uploaded file or error description.
+
+For instance, if you have 3 files to migrate to Uploadcare and your input file looks like this:
+    
+    https://cdn.filestackcontent.com/YBLVVdUpRqC4nOynxDd8
+    https://www.facebook.com/rsrc.php/v3/y7/r/dTQOHZm7Z-3.svg
+    uNWvPRXJQmO49MJbPZn9
+    
+Your output file with results will be look like this:
+
+    https://cdn.filestackcontent.com/YBLVVdUpRqC4nOynxDd8	success	https://ucarecdn.com/d8f8de4b-f92e-41a0-b7f9-28fd4baad9ae/
+    https://www.facebook.com/rsrc.php/v3/y7/r/dTQOHZm7Z-3.svg	success	https://ucarecdn.com/4a03f3d4-2bd3-456e-89a5-008190980248/
+    https://cdn.filestackcontent.com/uNWvPRXJQmO49MJbPZn9	failed	Uploading of these files types is not allowed on your current plan.
 
 ## How migration works
 
@@ -73,12 +95,6 @@ Specifically, it utilizes the `From URL`
 As a result, you'll get a listing of all the uploaded files.
 For every processed file, you're also getting its status and errors,
 in case there were any.
-
-For instance:
-
-    https://ucarecdn.com/9e383a6b-35a5-4612-ad86-5f84c64a152b/ success https://ucarecdn.com/d8f8de4b-f92e-41a0-b7f9-28fd4baad9ae/
-    https://ucarecdn.com/6a200842-df2e-4dd6-9bcd-060237c99d44/ success https://ucarecdn.com/4a03f3d4-2bd3-456e-89a5-008190980248/
-    https://ucarecdn.com/03452277-724a-40ff-8ff8-3d50801fcbe8/ failed  Uploading files of that type is not allowed on your current plan. 
 
 ## Examples
 
