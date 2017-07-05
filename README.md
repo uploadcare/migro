@@ -61,26 +61,26 @@ from other services too: you'll just need to provide your file URLs for import.
   ```              
  
 ## Output file format
-The output file format is very simple.
-For every file URL or Filestack file handle there is 3 columns divided by '\t'(tab).
+The output file format is quite simple.
+For each input file URL of Filestack file handle, there are 3 columns divided by the \t symbol (tab).
 
-First column - URL of Filestack handle iteself. 
+The first column holds input file URL or Filestack handle itself, 
+second column — upload operation status: success or failed, 
+third column — output Uploadcare URL or error description.
 
-Second column - upload operation status - `succes` or `failed`.
-
-Third column - The Uploadcare URL of uploaded file or error description.
-
-For instance, if you have 3 files to migrate to Uploadcare and your input file looks like this:
+For instance, you're willing to migrate the three following files to Uploadcare 
+where the first two are presented as URL and the third one as Filestack file 
+handle. Also, that's how your input text file will then be structured:
     
     https://cdn.filestackcontent.com/YBLVVdUpRqC4nOynxDd8
     https://www.facebook.com/rsrc.php/v3/y7/r/dTQOHZm7Z-3.svg
     uNWvPRXJQmO49MJbPZn9
     
-Your output file with results will be look like this:
+That's what you get in your Migro output file for those input entries:
 
-    https://cdn.filestackcontent.com/YBLVVdUpRqC4nOynxDd8	success	https://ucarecdn.com/d8f8de4b-f92e-41a0-b7f9-28fd4baad9ae/
-    https://www.facebook.com/rsrc.php/v3/y7/r/dTQOHZm7Z-3.svg	success	https://ucarecdn.com/4a03f3d4-2bd3-456e-89a5-008190980248/
-    https://cdn.filestackcontent.com/uNWvPRXJQmO49MJbPZn9	failed	Uploading of these files types is not allowed on your current plan.
+    https://cdn.filestackcontent.com/YBLVVdUpRqC4nOynxDd8       success	https://ucarecdn.com/d8f8de4b-f92e-41a0-b7f9-28fd4baad9ae/
+    https://www.facebook.com/rsrc.php/v3/y7/r/dTQOHZm7Z-3.svg   success	https://ucarecdn.com/4a03f3d4-2bd3-456e-89a5-008190980248/
+    https://cdn.filestackcontent.com/uNWvPRXJQmO49MJbPZn9       failed	Uploading of these files types is not allowed on your current plan.
 
 ## How migration works
 
