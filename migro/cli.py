@@ -188,7 +188,7 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
             output.write('{0}\t{1}\t{2}\n'.format(file.url, 'success',
                                                   ucare_url))
         for file in failed:
-            output.write('{0}\t{1}\t{2}\n'.format(file.url, 'failed',
+            output.write('{0}\t{1}\t{2}\n'.format(file.url, 'fail',
                                                   file.error))
 
     if cancelled:
