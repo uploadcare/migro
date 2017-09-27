@@ -58,10 +58,6 @@ Other options:
                                   running in 'parallel'.
                                   [default: 20]
 
-  --max_checks INTEGER            Maximum number of `from_url`
-                                  status check requests running in 'parallel'.
-                                  [default: 20]
-
   --check_interval FLOAT          Number of seconds in between status
                                   check requests.
 

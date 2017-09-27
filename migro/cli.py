@@ -30,6 +30,7 @@ def ask_exit():
     for task in pending:
         task.cancel()
 
+
 # Register SIGINT and SIGTERM signals for shutdown.
 for signame in ('SIGINT', 'SIGTERM'):
     loop.add_signal_handler(getattr(signal, signame), ask_exit)
@@ -48,6 +49,7 @@ def show_help(ctx, param, value):
     if value and not ctx.resilient_parsing:
         click.echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
+
 
 help_option = click.option("-h", "--help", is_flag=True, callback=show_help,
                            expose_value=False, is_eager=True,
@@ -91,14 +93,6 @@ max_concurrent_upload_option = click.option(
     help='Maximum number of upload requests running in \'parallel\'.',
     type=int)
 
-max_concurrent_checks_option = click.option(
-    '-mc', '--max_checks',
-    default=settings.MAX_CONCURRENT_CHECKS,
-    show_default=True,
-    help='Maximum number of `from_url` status check requests running in '
-         '\'parallel\'.',
-    type=int)
-
 status_check_interval_option = click.option(
     '-ci', '--check_interval',
     default=settings.STATUS_CHECK_INTERVAL,
@@ -130,17 +124,15 @@ output_file_option = click.option(
 @upload_base_option
 @from_url_timeout_option
 @max_concurrent_upload_option
-@max_concurrent_checks_option
 @status_check_interval_option
 def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
-        max_uploads, max_checks, check_interval):
+        max_uploads, check_interval):
     """Migrate your files to Uploadcare."""
     # Set settings from the cli args.
     settings.PUBLIC_KEY = public_key
     settings.UPLOAD_BASE = upload_base
     settings.FROM_URL_TIMEOUT = from_url_timeout
     settings.MAX_CONCURRENT_UPLOADS = max_uploads
-    settings.MAX_CONCURRENT_CHECKS = max_checks
     settings.STATUS_CHECK_INTERVAL = check_interval
 
     with open(input_file, 'r') as f:
@@ -202,6 +194,7 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
     click.echo('Thanks for your interest in Uploadcare.')
     click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')
+
 
 if __name__ == '__main__':
     cli()

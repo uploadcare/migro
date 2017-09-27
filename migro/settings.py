@@ -17,11 +17,7 @@ PUBLIC_KEY = None
 FROM_URL_TIMEOUT = 30
 
 # Maximum number of concurrent upload requests
-# Since we use `from_url` feature this will be just GET requests.
 MAX_CONCURRENT_UPLOADS = 20
-
-# Maximum number of concurrent jobs to wait of status update of uploaded file.
-MAX_CONCURRENT_CHECKS = 20
 
 # Time to wait before next status check, seconds.
 STATUS_CHECK_INTERVAL = 0.3
