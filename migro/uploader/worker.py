@@ -6,14 +6,14 @@
     File uploader worker.
 
 """
-import time
-
 import asyncio
-from enum import Enum
+import time
 from collections import defaultdict
-from migro import settings
-from migro.uploader.utils import request, loop
+from enum import Enum
 from uuid import uuid4
+
+from migro import settings
+from migro.uploader.utils import request
 
 
 class Events(Enum):
@@ -67,8 +67,7 @@ class Uploader:
     :param status_check_semaphore: Semaphore for status check tasks.
     :param event_queue: Events queue.
     :param upload_queue: Upload queue.
-    :param status_check_queue: Status check queue.
-    
+
     """
     EVENTS = (Events.UPLOAD_ERROR,
               Events.UPLOAD_COMPLETE,
@@ -83,12 +82,8 @@ class Uploader:
         # Semaphores to avoid too much 'parallel' requests.
         self._upload_semaphore = asyncio.Semaphore(
             settings.MAX_CONCURRENT_UPLOADS, loop=self.loop)
-        self._status_check_semaphore = asyncio.Semaphore(
-            settings.MAX_CONCURRENT_CHECKS, loop=self.loop)
-
         self.event_queue = asyncio.Queue(loop=self.loop)
         self.upload_queue = asyncio.Queue(loop=self.loop)
-        self.status_check_queue = asyncio.Queue(loop=self.loop)
 
     async def upload(self, file):
         """Upload file using `from_url` feature.
@@ -105,13 +100,14 @@ class Uploader:
                 event = {'type': Events.UPLOAD_ERROR, 'file': file}
             else:
                 file.upload_token = (await response.json())['token']
-                await self.status_check_queue.put(file)
                 event = {'type': Events.UPLOAD_COMPLETE, 'file': file}
 
-            # Mark file as processed from upload queue.
-            self.upload_queue.task_done()
             # Create event.
             asyncio.ensure_future(self.event_queue.put(event), loop=self.loop)
+            await self.wait_for_status(file)
+            # Mark file as processed from upload queue.
+            self.upload_queue.task_done()
+
             return None
 
     async def wait_for_status(self, file):
@@ -124,49 +120,39 @@ class Uploader:
         start = time.time()
         event = {'file': file}
         data = {'token': file.upload_token}
-
-        async with self._status_check_semaphore:
-            while time.time() - start <= settings.FROM_URL_TIMEOUT:
-                response = await request('from_url/status/', data)
-                if response.status != 200:
+        while time.time() - start <= settings.FROM_URL_TIMEOUT:
+            response = await request('from_url/status/', data)
+            if response.status != 200:
+                event['type'] = Events.DOWNLOAD_ERROR
+                file.error = 'Request error: {0}'.format(response.status)
+                break
+            else:
+                result = await response.json()
+                if 'error' in result:
                     event['type'] = Events.DOWNLOAD_ERROR
-                    file.error = 'Request error: {0}'.format(response.status)
+                    file.error = result['error']
+                    break
+                elif result['status'] == 'success':
+                    event['type'] = Events.DOWNLOAD_COMPLETE
+                    file.data = result
+                    file.uuid = result['uuid']
                     break
                 else:
-                    result = await response.json()
-                    if 'error' in result:
-                        event['type'] = Events.DOWNLOAD_ERROR
-                        file.error = result['error']
-                        break
-                    elif result['status'] == 'success':
-                        event['type'] = Events.DOWNLOAD_COMPLETE
-                        file.data = result
-                        file.uuid = result['uuid']
-                        break
-                    else:
-                        await asyncio.sleep(settings.STATUS_CHECK_INTERVAL)
-            else:
-                # `from_url` timeout.
-                event['type'] = Events.DOWNLOAD_ERROR
-                file.error = 'Status check timeout.'
+                    await asyncio.sleep(settings.STATUS_CHECK_INTERVAL)
+        else:
+            # `from_url` timeout.
+            event['type'] = Events.DOWNLOAD_ERROR
+            file.error = 'Status check timeout.'
 
-            # Mark file as processed from status check queue.
-            self.status_check_queue.task_done()
-            asyncio.ensure_future(self.event_queue.put(event), loop=loop)
-            return None
+        # Mark file as processed from status check queue.
+        asyncio.ensure_future(self.event_queue.put(event), loop=self.loop)
+        return None
 
     async def process_upload_queue(self):
         """Upload queue process coroutine."""
         while True:
             file = await self.upload_queue.get()
-            asyncio.ensure_future(self.upload(file))
-        return None
-
-    async def process_status_check_queue(self):
-        """Status check queue process coroutine."""
-        while True:
-            file = await self.status_check_queue.get()
-            asyncio.ensure_future(self.wait_for_status(file))
+            asyncio.ensure_future(self.upload(file), loop=self.loop)
         return None
 
     async def process(self, urls):
@@ -176,9 +162,8 @@ class Uploader:
         
         """
         self._consumers = [
-            asyncio.ensure_future(self.process_events()),
-            asyncio.ensure_future(self.process_upload_queue()),
-            asyncio.ensure_future(self.process_status_check_queue())
+            asyncio.ensure_future(self.process_events(), loop=self.loop),
+            asyncio.ensure_future(self.process_upload_queue(), loop=self.loop),
         ]
         for url in urls:
             # Put jobs into upload queue.
@@ -186,7 +171,6 @@ class Uploader:
 
         # Wait till all queues are processed
         await self.upload_queue.join()
-        await self.status_check_queue.join()
         return None
 
     def shutdown(self):
@@ -199,7 +183,8 @@ class Uploader:
             consumer.cancel()
         try:
             # Wait till started consumers tasks will finish.
-            self.loop.run_until_complete(asyncio.gather(*self._consumers))
+            self.loop.run_until_complete(asyncio.gather(*self._consumers,
+                                                        loop=self.loop))
         except asyncio.CancelledError:
             pass
 
