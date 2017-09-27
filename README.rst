@@ -120,6 +120,15 @@ And that's what you get:
     Upload progress: 100%|████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
     All files have been processed, output URLs were written to: /tmp/migro-result.txt
 
+Note for windows users
+----------------------
+
+Currently there is an issue with program termination by CTRL+C on Windows, so
+program can no be terminated correctly by this way.
+
+This is a platform dependent python programming language issue.
+
+
 Alternatives
 ------------
 

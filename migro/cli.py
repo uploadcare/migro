@@ -31,9 +31,13 @@ def ask_exit():
         task.cancel()
 
 
-# Register SIGINT and SIGTERM signals for shutdown.
-for signame in ('SIGINT', 'SIGTERM'):
-    loop.add_signal_handler(getattr(signal, signame), ask_exit)
+try:
+    # Register SIGINT and SIGTERM signals for shutdown.
+    for signame in ('SIGINT', 'SIGTERM'):
+        loop.add_signal_handler(getattr(signal, signame), ask_exit)
+except NotImplementedError:
+    if not sys.platform.startswith('win'):
+        raise
 
 
 def show_version(ctx, param, value):
