@@ -6,21 +6,15 @@
     Helpers functions.
 
 """
-from asyncio import Semaphore, Queue, get_event_loop
-from aiohttp import ClientSession, TCPConnector
-
+from asyncio import get_event_loop
 from urllib.parse import urljoin
+
+from aiohttp import ClientSession, TCPConnector
 
 from migro import settings
 
 loop = get_event_loop()
-upload_semaphore = Semaphore(settings.MAX_CONCURRENT_UPLOADS)
-status_check_semaphore = Semaphore(settings.MAX_CONCURRENT_CHECKS)
 session = ClientSession(connector=TCPConnector(verify_ssl=False, loop=loop))
-
-event_queue = Queue()
-upload_queue = Queue()
-status_check_queue = Queue()
 
 
 async def request(path, params=None):
