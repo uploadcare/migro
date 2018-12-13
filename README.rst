@@ -111,7 +111,7 @@ Here's how you run the utility:
 
 .. code-block::
 
-    $ migro 9a598e2a47fe961ea412 fileslist.txt -output_file /tmp/migro-result.txt
+    $ migro 9a598e2a47fe961ea412 fileslist.txt --output_file /tmp/migro-result.txt
 
 And that's what you get:
 
