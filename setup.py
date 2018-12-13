@@ -32,11 +32,11 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'aiohttp==2.0.7',
-        'click==6.7',
-        'python-dateutil==2.6.0',
-        'tqdm==4.11.2',
-        'colorama==0.3.9',
+        'aiohttp==3.4.4',
+        'click==7.0',
+        'python-dateutil==2.7.5',
+        'tqdm==4.28.1',
+        'colorama==0.4.1',
     ],
     include_package_data=True,
     classifiers=[
@@ -48,5 +48,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ]
 )
