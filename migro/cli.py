@@ -80,14 +80,14 @@ public_key_arg = click.argument(
     is_eager=True)
 
 upload_base_option = click.option(
-    '-ub', '--upload_base',
+    '--upload_base',
     default=settings.UPLOAD_BASE,
     show_default=True,
     help='Base URL for uploads.',
     type=str)
 
 from_url_timeout_option = click.option(
-    '-fut', '--from_url_timeout',
+    '--from_url_timeout',
     default=settings.FROM_URL_TIMEOUT,
     show_default=True,
     help='Number of seconds to wait till the file will be processed by '
@@ -95,14 +95,14 @@ from_url_timeout_option = click.option(
     type=float)
 
 max_concurrent_upload_option = click.option(
-    '-mu', '--max_uploads',
+    '--max_uploads',
     default=settings.MAX_CONCURRENT_UPLOADS,
     show_default=True,
     help='Maximum number of upload requests running in \'parallel\'.',
     type=int)
 
 status_check_interval_option = click.option(
-    '-ci', '--check_interval',
+    '--check_interval',
     default=settings.STATUS_CHECK_INTERVAL,
     help='Number of seconds in between status check requests.',
     type=float)
@@ -115,7 +115,7 @@ input_file_arg = click.argument(
                     readable=True))
 
 output_file_option = click.option(
-    '-o', '--output_file',
+    '--output_file',
     help='Path to a Migro output file.',
     show_default=True,
     default='migro_result.txt',
