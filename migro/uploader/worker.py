@@ -98,7 +98,7 @@ class Uploader:
             response = await request('from_url/', data)
             event = {'file': file}
 
-            if response.status == 499:
+            if response.status == 429:
                 event['type'] = Events.UPLOAD_THROTTLED
                 await asyncio.sleep(settings.THROTTLING_TIMEOUT,
                                     loop=self.loop)
