@@ -24,17 +24,21 @@ from migro.uploader.utils import loop, session
 from migro.filestack.utils import build_url
 
 
-def ask_exit():
+async def ask_exit(event_loop):
     """Loop and tasks shutdown callback."""
-    pending = asyncio.Task.all_tasks()
-    for task in pending:
-        task.cancel()
+    tasks = [t for t in asyncio.Task.all_tasks(event_loop) if t is not
+             asyncio.Task.current_task()]
+    [task.cancel() for task in tasks]
+    await asyncio.gather(*tasks)
+    event_loop.stop()
 
 
 try:
-    # Register SIGINT and SIGTERM signals for shutdown.
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame), ask_exit)
+    signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
+    for s in signals:
+        loop.add_signal_handler(
+            s, lambda: asyncio.ensure_future(ask_exit(loop))
+        )
 except NotImplementedError:
     if not sys.platform.startswith('win'):
         raise
@@ -76,14 +80,14 @@ public_key_arg = click.argument(
     is_eager=True)
 
 upload_base_option = click.option(
-    '-ub', '--upload_base',
+    '--upload_base',
     default=settings.UPLOAD_BASE,
     show_default=True,
     help='Base URL for uploads.',
     type=str)
 
 from_url_timeout_option = click.option(
-    '-fut', '--from_url_timeout',
+    '--from_url_timeout',
     default=settings.FROM_URL_TIMEOUT,
     show_default=True,
     help='Number of seconds to wait till the file will be processed by '
@@ -91,16 +95,23 @@ from_url_timeout_option = click.option(
     type=float)
 
 max_concurrent_upload_option = click.option(
-    '-mu', '--max_uploads',
+    '--max_uploads',
     default=settings.MAX_CONCURRENT_UPLOADS,
     show_default=True,
     help='Maximum number of upload requests running in \'parallel\'.',
     type=int)
 
 status_check_interval_option = click.option(
-    '-ci', '--check_interval',
+    '--check_interval',
     default=settings.STATUS_CHECK_INTERVAL,
     help='Number of seconds in between status check requests.',
+    type=float)
+
+throttling_timeout_option = click.option(
+    '--throttling_timeout',
+    default=settings.THROTTLING_TIMEOUT,
+    help='Number of seconds to wait for next upload request if it '
+         'has been throttled.',
     type=float)
 
 input_file_arg = click.argument(
@@ -111,7 +122,7 @@ input_file_arg = click.argument(
                     readable=True))
 
 output_file_option = click.option(
-    '-o', '--output_file',
+    '--output_file',
     help='Path to a Migro output file.',
     show_default=True,
     default='migro_result.txt',
@@ -127,15 +138,17 @@ output_file_option = click.option(
 @output_file_option
 @upload_base_option
 @from_url_timeout_option
+@throttling_timeout_option
 @max_concurrent_upload_option
 @status_check_interval_option
 def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
-        max_uploads, check_interval):
+        throttling_timeout, max_uploads, check_interval):
     """Migrate your files to Uploadcare."""
     # Set settings from the cli args.
     settings.PUBLIC_KEY = public_key
     settings.UPLOAD_BASE = upload_base
     settings.FROM_URL_TIMEOUT = from_url_timeout
+    settings.THROTTLING_TIMEOUT = throttling_timeout
     settings.MAX_CONCURRENT_UPLOADS = max_uploads
     settings.STATUS_CHECK_INTERVAL = check_interval
 
@@ -172,10 +185,9 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
         cancelled = True
     finally:
         bar.close()
-        session.close()
+        asyncio.ensure_future(session.close())
         uploader.shutdown()
 
-    loop.stop()
     loop.close()
 
     with open(output_file, 'w') as output:
@@ -195,6 +207,8 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
 
     click.echo('\n\n{0} files have been processed, output URLs were written '
                'to: are here: {1}'.format(num_files, output_file))
+    if failed:
+        click.echo('Number of failed files: {0}'.format(len(failed)))
     click.echo('Thanks for your interest in Uploadcare.')
     click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')

@@ -19,6 +19,7 @@ from migro.uploader.utils import request
 class Events(Enum):
     """Available events."""
     UPLOAD_ERROR = 'UPLOAD_ERROR'
+    UPLOAD_THROTTLED = 'UPLOAD_THROTTLED'
     UPLOAD_COMPLETE = 'UPLOAD_COMPLETE'
     # Download on Uploadcare side.
     DOWNLOAD_ERROR = 'DOWNLOAD_ERROR'
@@ -70,6 +71,7 @@ class Uploader:
 
     """
     EVENTS = (Events.UPLOAD_ERROR,
+              Events.UPLOAD_THROTTLED,
               Events.UPLOAD_COMPLETE,
               Events.DOWNLOAD_ERROR,
               Events.DOWNLOAD_COMPLETE)
@@ -94,17 +96,26 @@ class Uploader:
         async with self._upload_semaphore:
             data = {'source_url': file.url, 'store': 'auto'}
             response = await request('from_url/', data)
+            event = {'file': file}
 
-            if response.status != 200:
+            if response.status == 499:
+                event['type'] = Events.UPLOAD_THROTTLED
+                await asyncio.sleep(settings.THROTTLING_TIMEOUT,
+                                    loop=self.loop)
+            elif response.status != 200:
                 file.error = 'UPLOAD_ERROR: {0}'.format(await response.text())
-                event = {'type': Events.UPLOAD_ERROR, 'file': file}
+                event['type'] = Events.UPLOAD_ERROR
             else:
                 file.upload_token = (await response.json())['token']
-                event = {'type': Events.UPLOAD_COMPLETE, 'file': file}
-
+                event['type'] = Events.UPLOAD_COMPLETE
             # Create event.
             asyncio.ensure_future(self.event_queue.put(event), loop=self.loop)
-            await self.wait_for_status(file)
+
+            if event['type'] == Events.UPLOAD_THROTTLED:
+                # Put item back to queue since it need to be retried
+                await self.upload_queue.put(file)
+            elif event['type'] != Events.UPLOAD_ERROR:
+                await self.wait_for_status(file)
             # Mark file as processed from upload queue.
             self.upload_queue.task_done()
 
@@ -138,7 +149,8 @@ class Uploader:
                     file.uuid = result['uuid']
                     break
                 else:
-                    await asyncio.sleep(settings.STATUS_CHECK_INTERVAL)
+                    await asyncio.sleep(settings.STATUS_CHECK_INTERVAL,
+                                        loop=self.loop)
         else:
             # `from_url` timeout.
             event['type'] = Events.DOWNLOAD_ERROR

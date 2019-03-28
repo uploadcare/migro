@@ -21,3 +21,6 @@ MAX_CONCURRENT_UPLOADS = 20
 
 # Time to wait before next status check, seconds.
 STATUS_CHECK_INTERVAL = 0.3
+
+# Throttling timeout sleep interval
+THROTTLING_TIMEOUT = 5.0

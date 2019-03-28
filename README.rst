@@ -36,30 +36,28 @@ Other options:
 
 .. code-block::
 
-  -v, --version                   Show utility version and quit.
+  -v, --version               Show utility version and quit.
 
-  -h, --help                      Show this help and quit.
+  -h, --help                  Show this help and quit.
 
-  -o, --output_file PATH          Path to a Migro output file.
-                                  [default: migro_result.txt]
+  --output_file FILE          Path to a Migro output file.  [default:
+                              migro_result.txt]
 
-  --upload_base TEXT              Base URL for uploads.
-                                  [default: https://upload.uploadcare.com/]
+  --upload_base TEXT          Base URL for uploads.  [default:
+                              https://upload.uploadcare.com/]
 
-  --from_url_timeout FLOAT        Maximum number of seconds for uploading
-                                  a single file via `from_url`. If this
-                                  threshold gets exceeded, a file is
-                                  considered not loaded. Increase this
-                                  timeout when expecting to get larger
-                                  files via `from_url`.
-                                  [default: 30]
+  --throttling_timeout FLOAT  Number of seconds to wait for next upload
+                              request if it has been throttled. [default: 5]
 
-  --max_uploads INTEGER           Maximum number of upload requests
-                                  running in 'parallel'.
-                                  [default: 20]
+  --from_url_timeout FLOAT    Number of seconds to wait till the file will be
+                              processed by `from_url` upload.  [default: 30]
 
-  --check_interval FLOAT          Number of seconds in between status
-                                  check requests.
+  --max_uploads INTEGER       Maximum number of upload requests running in
+                              'parallel'.  [default: 20]
+
+  --check_interval FLOAT      Number of seconds in between status check
+                              requests.
+
 
 Output file format
 ------------------
@@ -118,7 +116,10 @@ And that's what you get:
 .. code-block::
 
     Upload progress: 100%|████████████████████████████████████████████████| 6/6 [00:03<00:00,  1.74s/file]
-    All files have been processed, output URLs were written to: /tmp/migro-result.txt
+    All files have been processed, output URLs were written to: are here: /tmp/migro_result.txt
+    Number of failed files: 1
+    Thanks for your interest in Uploadcare.
+    Hit us up at help@uploadcare.com in case of any questions.
 
 Note for windows users
 ----------------------
