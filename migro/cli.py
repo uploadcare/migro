@@ -24,17 +24,21 @@ from migro.uploader.utils import loop, session
 from migro.filestack.utils import build_url
 
 
-def ask_exit():
+async def ask_exit(event_loop):
     """Loop and tasks shutdown callback."""
-    pending = asyncio.Task.all_tasks()
-    for task in pending:
-        task.cancel()
+    tasks = [t for t in asyncio.Task.all_tasks(event_loop) if t is not
+             asyncio.Task.current_task()]
+    [task.cancel() for task in tasks]
+    await asyncio.gather(*tasks)
+    event_loop.stop()
 
 
 try:
-    # Register SIGINT and SIGTERM signals for shutdown.
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame), ask_exit)
+    signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
+    for s in signals:
+        loop.add_signal_handler(
+            s, lambda: asyncio.ensure_future(ask_exit(loop))
+        )
 except NotImplementedError:
     if not sys.platform.startswith('win'):
         raise
@@ -172,10 +176,9 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
         cancelled = True
     finally:
         bar.close()
-        session.close()
+        asyncio.ensure_future(session.close())
         uploader.shutdown()
 
-    loop.stop()
     loop.close()
 
     with open(output_file, 'w') as output:
