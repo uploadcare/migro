@@ -198,6 +198,8 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
 
     click.echo('\n\n{0} files have been processed, output URLs were written '
                'to: are here: {1}'.format(num_files, output_file))
+    if failed:
+        click.echo('Number of failed files: {0}'.format(len(failed)))
     click.echo('Thanks for your interest in Uploadcare.')
     click.echo('Hit us up at help@uploadcare.com in case of any questions.')
     click.echo('')
