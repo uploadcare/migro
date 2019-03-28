@@ -107,6 +107,13 @@ status_check_interval_option = click.option(
     help='Number of seconds in between status check requests.',
     type=float)
 
+throttling_timeout_option = click.option(
+    '--throttling_timeout',
+    default=settings.THROTTLING_TIMEOUT,
+    help='Number of seconds to wait for next upload request if it '
+         'has been throttled.',
+    type=float)
+
 input_file_arg = click.argument(
     'input_file',
     required=True,
@@ -131,15 +138,17 @@ output_file_option = click.option(
 @output_file_option
 @upload_base_option
 @from_url_timeout_option
+@throttling_timeout_option
 @max_concurrent_upload_option
 @status_check_interval_option
 def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
-        max_uploads, check_interval):
+        throttling_timeout, max_uploads, check_interval):
     """Migrate your files to Uploadcare."""
     # Set settings from the cli args.
     settings.PUBLIC_KEY = public_key
     settings.UPLOAD_BASE = upload_base
     settings.FROM_URL_TIMEOUT = from_url_timeout
+    settings.THROTTLING_TIMEOUT = throttling_timeout
     settings.MAX_CONCURRENT_UPLOADS = max_uploads
     settings.STATUS_CHECK_INTERVAL = check_interval
 
