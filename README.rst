@@ -46,9 +46,6 @@ Other options:
   --upload_base TEXT          Base URL for uploads.  [default:
                               https://upload.uploadcare.com/]
 
-  --throttling_timeout FLOAT  Number of seconds to wait for next upload
-                              request if it has been throttled. [default: 5]
-
   --from_url_timeout FLOAT    Number of seconds to wait till the file will be
                               processed by `from_url` upload.  [default: 30]
 

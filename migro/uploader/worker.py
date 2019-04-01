@@ -100,8 +100,9 @@ class Uploader:
 
             if response.status == 429:
                 event['type'] = Events.UPLOAD_THROTTLED
-                await asyncio.sleep(settings.THROTTLING_TIMEOUT,
-                                    loop=self.loop)
+                timeout = response.headers.get('Retry-After',
+                                               settings.THROTTLING_TIMEOUT)
+                await asyncio.sleep(float(timeout), loop=self.loop)
             elif response.status != 200:
                 file.error = 'UPLOAD_ERROR: {0}'.format(await response.text())
                 event['type'] = Events.UPLOAD_ERROR
