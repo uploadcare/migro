@@ -107,13 +107,6 @@ status_check_interval_option = click.option(
     help='Number of seconds in between status check requests.',
     type=float)
 
-throttling_timeout_option = click.option(
-    '--throttling_timeout',
-    default=settings.THROTTLING_TIMEOUT,
-    help='Number of seconds to wait for next upload request if it '
-         'has been throttled.',
-    type=float)
-
 input_file_arg = click.argument(
     'input_file',
     required=True,
@@ -138,7 +131,6 @@ output_file_option = click.option(
 @output_file_option
 @upload_base_option
 @from_url_timeout_option
-@throttling_timeout_option
 @max_concurrent_upload_option
 @status_check_interval_option
 def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
