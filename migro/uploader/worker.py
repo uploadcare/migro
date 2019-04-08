@@ -140,9 +140,9 @@ class Uploader:
                 break
             else:
                 result = await response.json()
-                if 'error' in result:
+                if result['status'] == 'error':
                     event['type'] = Events.DOWNLOAD_ERROR
-                    file.error = result['error']
+                    file.error = result.get('error', 'unknown')
                     break
                 elif result['status'] == 'success':
                     event['type'] = Events.DOWNLOAD_COMPLETE
