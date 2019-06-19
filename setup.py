@@ -35,7 +35,7 @@ setup(
         'aiohttp==3.5.4',
         'click==7.0',
         'python-dateutil==2.8.0',
-        'tqdm==4.32.1',
+        'tqdm==4.32.2',
         'colorama==0.4.1',
     ],
     include_package_data=True,
