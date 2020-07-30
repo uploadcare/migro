@@ -12,6 +12,9 @@ UPLOAD_BASE = 'https://upload.uploadcare.com/'
 # Project public key.
 PUBLIC_KEY = None
 
+# Project secret key
+SECRET_KEY = None
+
 # Timeout for status check of file uploaded by `from_url`.
 # If you have big files - you can increase this option.
 FROM_URL_TIMEOUT = 30
