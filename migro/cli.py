@@ -79,6 +79,13 @@ public_key_arg = click.argument(
     type=str,
     is_eager=True)
 
+secret_key_option = click.option(
+    '--secret_key',
+    default=settings.SECRET_KEY,
+    show_default=True,
+    help='Your Uploadcare project secret key, required for secure uploads.',
+    type=str)
+
 upload_base_option = click.option(
     '--upload_base',
     default=settings.UPLOAD_BASE,
@@ -128,12 +135,13 @@ output_file_option = click.option(
 @help_option
 @public_key_arg
 @input_file_arg
+@secret_key_option
 @output_file_option
 @upload_base_option
 @from_url_timeout_option
 @max_concurrent_upload_option
 @status_check_interval_option
-def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
+def cli(public_key, input_file, secret_key, output_file, upload_base, from_url_timeout,
         max_uploads, check_interval):
     """Migrate your files to Uploadcare."""
     # Set settings from the cli args.
@@ -142,6 +150,7 @@ def cli(public_key, input_file, output_file, upload_base, from_url_timeout,
     settings.FROM_URL_TIMEOUT = from_url_timeout
     settings.MAX_CONCURRENT_UPLOADS = max_uploads
     settings.STATUS_CHECK_INTERVAL = check_interval
+    settings.SECRET_KEY = secret_key
 
     with open(input_file, 'r') as f:
         urls = f.readlines()
