@@ -6,12 +6,15 @@
     Helpers functions.
 
 """
-from asyncio import get_event_loop
-from urllib.parse import urljoin
-from datetime import datetime, timedelta
-import time
 import hashlib
 import hmac
+import time
+
+from aiohttp import ClientSession, TCPConnector
+from asyncio import get_event_loop
+from urllib.parse import urljoin
+
+from migro import settings
 
 from aiohttp import ClientSession, TCPConnector
 
