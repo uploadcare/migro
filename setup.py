@@ -32,7 +32,7 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'aiohttp==3.7.4',
+        'aiohttp==3.7.4.post0',
         'click==7.1.2',
         'python-dateutil==2.8.1',
         'tqdm==4.59.0',
