@@ -7,6 +7,7 @@
 
 """
 import asyncio
+import sys
 import time
 from collections import defaultdict
 from enum import Enum
@@ -81,11 +82,16 @@ class Uploader:
             loop = asyncio.get_event_loop()
         self._events_callbacks = defaultdict(list)
         self.loop = loop
+        # As of 3.10, the `loop`*` parameter was removed
+        # since it is no longer necessary.
+        # This is a workaround to support old and new versions.
+        self.loop_kwargs = {'loop': self.loop} if sys.version_info < (3, 10) else {}
+
         # Semaphores to avoid too much 'parallel' requests.
         self._upload_semaphore = asyncio.Semaphore(
-            settings.MAX_CONCURRENT_UPLOADS, loop=self.loop)
-        self.event_queue = asyncio.Queue(loop=self.loop)
-        self.upload_queue = asyncio.Queue(loop=self.loop)
+            settings.MAX_CONCURRENT_UPLOADS, **self.loop_kwargs)
+        self.event_queue = asyncio.Queue(**self.loop_kwargs)
+        self.upload_queue = asyncio.Queue(**self.loop_kwargs)
 
     async def upload(self, file):
         """Upload file using `from_url` feature.
@@ -102,7 +108,7 @@ class Uploader:
                 event['type'] = Events.UPLOAD_THROTTLED
                 timeout = response.headers.get('Retry-After',
                                                settings.THROTTLING_TIMEOUT)
-                await asyncio.sleep(float(timeout), loop=self.loop)
+                await asyncio.sleep(float(timeout), **self.loop_kwargs)
             elif response.status != 200:
                 file.error = 'UPLOAD_ERROR: {0}'.format(await response.text())
                 event['type'] = Events.UPLOAD_ERROR
@@ -151,7 +157,7 @@ class Uploader:
                     break
                 else:
                     await asyncio.sleep(settings.STATUS_CHECK_INTERVAL,
-                                        loop=self.loop)
+                                        **self.loop_kwargs)
         else:
             # `from_url` timeout.
             event['type'] = Events.DOWNLOAD_ERROR
@@ -197,7 +203,7 @@ class Uploader:
         try:
             # Wait till started consumers tasks will finish.
             self.loop.run_until_complete(asyncio.gather(*self._consumers,
-                                                        loop=self.loop))
+                                                        **self.loop_kwargs))
         except asyncio.CancelledError:
             pass
 
