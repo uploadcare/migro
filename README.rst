@@ -10,7 +10,7 @@ from other services too: you'll just need to provide your file URLs for import.
 Installation
 ------------
 
-This utility requires Python version 3.5.3 or later.
+This utility requires Python version 3.8 or later.
 
 In order to install ``migro``, simply run:
 
