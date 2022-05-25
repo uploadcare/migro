@@ -1,5 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
