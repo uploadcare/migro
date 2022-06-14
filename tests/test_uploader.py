@@ -1,5 +1,9 @@
-from migro.uploader.utils import loop
+import asyncio
+from unittest.mock import AsyncMock
+
+from migro.uploader.utils import loop, request, session
 from migro.uploader.worker import Uploader, Events
+from migro import settings, __version__
 
 
 def test_uploader(mock_session):
@@ -26,3 +30,19 @@ def test_uploader(mock_session):
 
     assert successful
     assert not failed
+
+
+def test_headers():
+    settings.PUBLIC_KEY = "public"
+
+    mock = AsyncMock(return_value="ok")
+
+    original_request = session.request
+    session.request = mock
+    resp = asyncio.run(request('path'))
+    session.request = original_request
+
+    expected_ua = f"Migro/{__version__}/public"
+    assert expected_ua == mock.call_args.kwargs["headers"]["User-Agent"]
+
+    assert "ok" == resp
