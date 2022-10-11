@@ -36,7 +36,7 @@ setup(
         'click==8.1.3',
         'python-dateutil==2.8.2',
         'tqdm==4.64.0',
-        'colorama==0.4.4',
+        'colorama==0.4.5',
     ],
     include_package_data=True,
     classifiers=[
