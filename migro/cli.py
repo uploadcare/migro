@@ -24,20 +24,35 @@ from migro.uploader.utils import loop, session
 from migro.filestack.utils import build_url
 
 
-async def ask_exit(event_loop):
+async def ask_exit():
     """Loop and tasks shutdown callback."""
-    tasks = [t for t in asyncio.Task.all_tasks(event_loop) if t is not
-             asyncio.Task.current_task()]
+
+    # Handling tasks differently based on Python version due to the deprecation
+    # of asyncio.Task.all_tasks() and asyncio.Task.current_task() in favor of
+    # asyncio.all_tasks() and asyncio.current_task() without the need for the event loop.
+    if sys.version_info < (3, 7):
+        tasks = [t for t in asyncio.Task.all_tasks() if t is not
+                 asyncio.Task.current_task()]
+    else:
+        tasks = [t for t in asyncio.all_tasks() if t is not
+                 asyncio.current_task()]
+
     [task.cancel() for task in tasks]
-    await asyncio.gather(*tasks)
-    event_loop.stop()
+
+    if sys.version_info < (3, 7):
+        await asyncio.gather(*tasks)
+    else:
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+    running_loop = asyncio.get_running_loop() if sys.version_info >= (3, 7) else asyncio.get_event_loop()
+    running_loop.stop()
 
 
 try:
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
     for s in signals:
         loop.add_signal_handler(
-            s, lambda: asyncio.ensure_future(ask_exit(loop))
+            s, lambda: asyncio.ensure_future(ask_exit())
         )
 except NotImplementedError:
     if not sys.platform.startswith('win'):
