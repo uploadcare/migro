@@ -133,20 +133,22 @@ class DBManager:
         self.conn.commit()
         return cursor.lastrowid
 
-    def finish_attempt(self, attempt_id: int) -> None:
+    def finish_attempt(self, attempt_id: int) -> tuple:
         """
-        Finish an attempt.
+        Retrieve attempt details including file list, and count of 'uploaded' and 'error' statuses.
         """
         cursor = self.conn.cursor()
+        cursor.execute("SELECT path, file_size, uploadcare_uuid, status, error FROM files WHERE last_attempt_id = ?",
+                       (attempt_id,))
+        file_list = cursor.fetchall()
+
         cursor.execute("SELECT COUNT(*) FROM files WHERE last_attempt_id = ? AND status = 'uploaded'", (attempt_id,))
-        successful_uploads = cursor.fetchone()[0]
+        count_uploaded = cursor.fetchone()[0]
+
         cursor.execute("SELECT COUNT(*) FROM files WHERE last_attempt_id = ? AND status = 'error'", (attempt_id,))
-        failed_uploads = cursor.fetchone()[0]
-        cursor.execute(
-            "UPDATE attempts SET successful_uploads = ?, failed_uploads = ?, finished_at = CURRENT_TIMESTAMP WHERE id = ?",
-            (successful_uploads, failed_uploads, attempt_id)
-        )
-        self.conn.commit()
+        count_error = cursor.fetchone()[0]
+
+        return file_list, attempt_id, count_uploaded, count_error
 
     def set_attempt_for_files(self, attempt_id: int, ignore_errors: bool = False) -> None:
         """
