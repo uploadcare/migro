@@ -27,3 +27,18 @@ STATUS_CHECK_INTERVAL = 0.3
 
 # Throttling timeout sleep interval
 THROTTLING_TIMEOUT = 5.0
+
+# S3 access key ID.
+S3_ACCESS_KEY_ID = None
+
+# S3 secret access key.
+S3_SECRET_ACCESS_KEY = None
+
+# S3 bucket name.
+S3_BUCKET_NAME = None
+
+# S3 region.
+S3_REGION = None
+
+# S3 signed URL expiration time, seconds.
+S3_URL_EXPIRATION_TIME = 86400
