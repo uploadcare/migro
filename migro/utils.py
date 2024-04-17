@@ -13,3 +13,5 @@ def save_result_to_csv(files, attempt_id, source):
         writer = csv.writer(file)
         writer.writerow(['Path', 'File Size', 'Uploadcare UUID', 'Status', 'Error'])
         writer.writerows(files)
+
+    return filename
