@@ -1,7 +1,7 @@
 """
 
     migro.db.db_manager
-    ~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~
 
     Database manager.
 
@@ -148,6 +148,11 @@ class DBManager:
         cursor.execute("SELECT COUNT(*) FROM files WHERE last_attempt_id = ? AND status = 'error'", (attempt_id,))
         count_error = cursor.fetchone()[0]
 
+        cursor.execute(
+            "UPDATE attempts SET finished_at = CURRENT_TIMESTAMP, successful_uploads = ?, failed_uploads = ? "
+            "WHERE id = ?",
+            (count_uploaded, count_error, attempt_id))
+
         return file_list, attempt_id, count_uploaded, count_error
 
     def set_attempt_for_files(self, attempt_id: int, ignore_errors: bool = False) -> None:
@@ -187,16 +192,16 @@ class DBManager:
         total_size = result[1] if result[1] is not None else 0
         return number_of_files, total_size
 
-    def get_pending_files(self, include_errors: bool = True) -> list[str]:
+    def get_pending_files(self, source, include_errors: bool = True) -> list[str]:
         """
         Get the list of pending files.
         """
         cursor = self.conn.cursor()
-        query = "SELECT path FROM files WHERE status = 'pending'"
+        query = "SELECT path FROM files WHERE status = 'pending' AND source = ?"
         if include_errors:
-            query = "SELECT path FROM files WHERE status IN ('pending', 'error')"
+            query = "SELECT path FROM files WHERE status IN ('pending', 'error') AND source = ?"
 
-        cursor.execute(query)
+        cursor.execute(query, (source,))
         return [row[0] for row in cursor.fetchall()]
 
     def set_file_uploaded(self, path: str, source: str, attempt: int, uploadcare_uuid: str) -> None:
