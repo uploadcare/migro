@@ -42,11 +42,11 @@ async def request(path, params=None):
     params['pub_key'] = settings.PUBLIC_KEY
     params['UPLOADCARE_PUB_KEY'] = settings.PUBLIC_KEY
 
-    if (settings.SECRET_KEY):
+    if settings.SECRET_KEY:
         expire_timestamp = generate_expire_timestamp()
         upload_signature = generate_secure_signature(settings.SECRET_KEY, expire_timestamp)
 
-        params['signature'] =  upload_signature
+        params['signature'] = upload_signature
         params['expire'] = expire_timestamp
 
     response = await session.request(
