@@ -1,20 +1,22 @@
 import boto3
-from botocore.exceptions import NoCredentialsError, ClientError
-from botocore.paginate import PageIterator
+from botocore.exceptions import ClientError
 from typing import Tuple, Generator, List, Dict
 from migro import settings
 
 
-class AccessDeniedError(Exception):
+class S3ClientException(Exception):
+    """Base class for S3Client exceptions. """
     pass
 
 
-class UnexpectedError(Exception):
-    pass
+class AccessDeniedError(S3ClientException):
+    def __init__(self, message):
+        super().__init__(f"Access Denied: {message}")
 
 
-class ObjectNotFoundError(Exception):
-    pass
+class UnexpectedError(S3ClientException):
+    def __init__(self, message):
+        super().__init__(f"An unexpected error occurred: {message}")
 
 
 class S3Client:
@@ -28,33 +30,26 @@ class S3Client:
         )
 
     def check_credentials(self) -> None:
-        """Check if the credentials are valid."""
+        """Check if the credentials are valid and have access to list and get objects."""
+        paginator = self.s3.get_paginator('list_objects_v2')
+        operation = "ListObjects"
         try:
-            paginator = self.s3.get_paginator('list_objects_v2')
-            pages: PageIterator = paginator.paginate(Bucket=self.bucket_name)
-        except NoCredentialsError:
-            raise
+            for page in paginator.paginate(Bucket=self.bucket_name):
+                operation = "GetObject"
+                if 'Contents' in page:
+                    for obj in page['Contents']:
+                        self.s3.get_object(Bucket=self.bucket_name, Key=obj['Key'])
+                        return
         except ClientError as e:
-            if e.response['Error']['Code'] == '403':
-                raise AccessDeniedError('Access Denied. The credentials do not allow ListObjects operation.')
+            error_code = e.response['Error']['Code']
+            if error_code == 'AccessDenied':
+                raise AccessDeniedError(f"The AWS credentials provided do not have permission "
+                                        f"to perform the '{operation}'.")
+            elif error_code in ['NoSuchBucket', 'NoSuchKey']:
+                raise AccessDeniedError(
+                    "The specified bucket or key does not exist.")
             else:
-                raise UnexpectedError(f'An unexpected error occurred: {e}')
-
-        for page in pages:
-            if 'Contents' in page and page['Contents']:
-                first_object_key = page['Contents'][0]['Key']
-                try:
-                    self.s3.get_object(Bucket=self.bucket_name, Key=first_object_key)
-                    break
-                except ClientError as e:
-                    error_code = e.response['Error']['Code']
-                    if error_code == '403':
-                        raise AccessDeniedError('Access Denied. The credentials do not allow GetObject operation.')
-                    elif error_code == '404':
-                        raise ObjectNotFoundError(
-                            'You don\' have any objects in bucket.')
-                    else:
-                        raise UnexpectedError(f'An unexpected error occurred: {e}')
+                raise UnexpectedError(str(e))
 
     def get_bucket_contents(self) -> Generator[Tuple[str, int], None, None]:
         """Get the contents of the bucket."""

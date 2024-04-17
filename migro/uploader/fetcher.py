@@ -15,8 +15,8 @@ from migro.uploader.utils import loop, session
 from migro.uploader.s3_client import (
     S3Client,
     AccessDeniedError,
-    UnexpectedError,
-    ObjectNotFoundError)
+    UnexpectedError
+)
 from migro.utils import save_result_to_csv
 from migro.filestack.utils import build_url
 from db.db_manager import DBManager
@@ -164,14 +164,14 @@ class Fetcher:
         try:
             self.s3_client.check_credentials()
         except AccessDeniedError as e:
-            click.secho(f'Error: {e}', fg='red')
+            click.secho(e, fg='red')
+            asyncio.ensure_future(session.close())
             return
         except UnexpectedError as e:
-            click.secho(f'Error: {e}', fg='red')
+            click.secho(e, fg='red')
+            asyncio.ensure_future(session.close())
             return
-        except ObjectNotFoundError as e:
-            click.secho(f'Error: {e}', fg='red')
-            return
+
         click.echo('Credentials are correct.')
         click.echo('Collecting files...')
 
