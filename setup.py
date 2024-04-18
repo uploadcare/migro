@@ -37,6 +37,9 @@ setup(
         'python-dateutil==2.8.2',
         'tqdm==4.65.0',
         'colorama==0.4.6',
+        'boto3==1.34.80',
+        'botocore==1.34.80',
+        'python-dotenv==1.0.1'
     ],
     include_package_data=True,
     classifiers=[
