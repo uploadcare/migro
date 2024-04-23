@@ -99,12 +99,10 @@ Migro supports migration from the following sources:
 
 Each migration source requires the following arguments:
 
-.. code-block::
+``<PUBLIC_KEY>`` — Your Uploadcare project `public key`_.
 
-    ``<PUBLIC_KEY>`` — Your Uploadcare project `public key`_.
-
-    ``[<SECRET_KEY>]`` — Your Uploadcare project secret key.
-    This is optional and required only if the signed uploads feature is enabled in your project.
+``[<SECRET_KEY>]`` — Your Uploadcare project secret key.
+This is optional and required only if the signed uploads feature is enabled in your project.
 
 And the following options:
 
@@ -164,13 +162,13 @@ To initiate the migration, execute the following command:
 
 .. code-block:: console
 
-    $ migro aws <PUBLIC_KEY> [<SECRET_KEY>] [<OPTIONS>]
+    $ migro s3 <PUBLIC_KEY> [<SECRET_KEY>] [<OPTIONS>]
 
 For example:
 
 .. code-block:: console
 
-    $ migro aws <PUBLIC_KEY> --s3_bucket_name <BUCKET_NAME> --s3_access_key_id <ACCESS_KEY_ID> --s3_secret_access_key <SECRET_ACCESS_KEY> --s3_region <REGION>
+    $ migro s3 <PUBLIC_KEY> --s3_bucket_name <BUCKET_NAME> --s3_access_key_id <ACCESS_KEY_ID> --s3_secret_access_key <SECRET_ACCESS_KEY> --s3_region <REGION>
 
 
 Options:
@@ -244,8 +242,7 @@ Here's how you set up the tool for the first time:
 
 .. code-block:: console
 
-    $ migro init --public_key <PUBLIC_KEY> --s3_access_key_id <S3_ACCESS_KEY>
-    --s3_secret_access_key <S3_SECRET_KEY> --s3_bucket_name <S3_BUCKET_NAME> --s3_region <S3_REGION>
+    $ migro init --public_key <PUBLIC_KEY> --s3_access_key_id <S3_ACCESS_KEY> --s3_secret_access_key <S3_SECRET_KEY> --s3_bucket_name <S3_BUCKET_NAME> --s3_region <S3_REGION>
 
 .. code-block::
 
