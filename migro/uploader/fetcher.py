@@ -6,10 +6,10 @@
     File fetcher.
 
 """
+import asyncio
 from tqdm import tqdm
 import click
 
-from .process_loop import *
 from migro.uploader.worker import Uploader, Events
 from migro.uploader.utils import loop, session
 from migro.uploader.s3_client import (
