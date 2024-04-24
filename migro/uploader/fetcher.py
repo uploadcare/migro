@@ -134,7 +134,7 @@ class Fetcher:
     @staticmethod
     def show_final_messages(filename, success_count, failed_count):
         """Show the final messages before quitting the program."""
-        click.echo(f'\n\nFile uploading has been finished!')
+        click.echo('\n\nFile uploading has been finished!')
         click.secho(f'Uploaded files: {success_count}', fg='green' if success_count else 'white')
         click.secho(f'Failed files: {failed_count}', fg='red' if failed_count else 'white')
         click.echo(f'Check the results in "{filename}"')
