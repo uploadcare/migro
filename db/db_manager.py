@@ -49,7 +49,7 @@ class DBManager:
             c.executescript(sql_script) if ';' in sql_script else c.execute(sql_script)
             self.conn.commit()
         except Error as e:
-            click.secho(f"Failed to execute SQL script:", fg='red')
+            click.secho("Failed to execute SQL script:", fg='red')
             click.secho(f"Error: {e}", fg='red')
 
     def create_tables(self) -> None:
