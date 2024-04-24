@@ -11,12 +11,12 @@ import sys
 from pathlib import Path
 from dotenv import dotenv_values, find_dotenv
 from functools import wraps
+import click
 
 # Add migro directory to PATH.
 parent = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(os.path.realpath(parent))
 
-import click
 from migro import settings, __version__
 from migro.uploader.fetcher import Fetcher
 
