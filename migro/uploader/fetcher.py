@@ -138,6 +138,8 @@ class Fetcher:
         click.secho(f'Uploaded files: {success_count}', fg='green' if success_count else 'white')
         click.secho(f'Failed files: {failed_count}', fg='red' if failed_count else 'white')
         click.echo(f'Check the results in "{filename}"')
+        click.echo('Thanks for your interest in Uploadcare.')
+        click.echo('Hit us up at help@uploadcare.com in case of any questions.')
 
     def clear_db(self):
         """Clear the database."""
