@@ -27,8 +27,8 @@ Migro assists in migrating files to Uploadcare from AWS S3 and other cloud
 file management services such as Filestack, Cloudinary, etc.
 You can also migrate from additional services by providing URLs for file import.
 
-To prevent duplicates, Migro utilizes a local SQLite database to store migration statuses,
-thereby avoiding the re-upload of files in case of an interruption or failure.
+Migro utilizes a local SQLite database to store migration statuses to prevent duplicates,
+thereby avoiding re-uploading files in case of an interruption or failure.
 
 
 How migration works
@@ -39,8 +39,8 @@ the `Uploading API`_, specifically the ``From URL`` method_.
 The migration process is straightforward: you either provide a list of file
 URLs or set your AWS S3 credentials, and those files are uploaded to your Uploadcare project.
 
-Upon completion, you will receive a listing of all uploaded files. For each processed file,
-you will also receive details on its status and any errors that may have occurred.
+Upon completion, you will receive a listing of all uploaded files.
+You will also receive details on the status of each processed file and any errors that may have occurred.
 
 
 Installation
@@ -48,7 +48,7 @@ Installation
 
 This utility requires Python version 3.8 or later.
 
-In order to install ``migro``, simply run:
+In order to install ``migro``, run:
 
 .. code-block:: console
 
@@ -61,8 +61,7 @@ Get started
 To begin using Migro, you must have your Uploadcare project `public key`_.
 
 Optionally, you can store the public key and other necessary credentials in environment variables.
-This approach is particularly useful if you have a large number of files to migrate and enables you
-to easily run multiple migrations.
+This approach is beneficial if you must migrate many files, allowing you to perform multiple migrations efficiently.
 
 .. code-block:: console
 
@@ -85,7 +84,7 @@ credentials or add new ones. For instance, if you run the following command:
 
 The tool will update the secret key but leave the public key unchanged.
 
-Depending on the source of files you want to migrate, different credentials are needed.
+Different credentials are needed depending on the source of files you want to migrate.
 Refer to the necessary options for each source below.
 
 
@@ -99,9 +98,9 @@ Migro supports migration from the following sources:
 
 Each migration source requires the following arguments:
 
-``<PUBLIC_KEY>`` — Your Uploadcare project `public key`_.
+``<PUBLIC_KEY>`` — your Uploadcare project `public key`_.
 
-``[<SECRET_KEY>]`` — Your Uploadcare project secret key.
+``[<SECRET_KEY>]`` — your Uploadcare project secret key.
 This is optional and required only if the signed uploads feature is enabled in your project.
 
 And the following options:
@@ -200,7 +199,7 @@ To migrate files using a list of URLs, execute the following command:
 
 Where:
 
-``<INPUT_FILE>`` — Path to a text file containing a list of file URLs
+``<INPUT_FILE>`` — path to a text file containing a list of file URLs
 to be uploaded to your Uploadcare project.
 
 Options:
@@ -213,8 +212,8 @@ Options:
 Results file
 ------------
 
-Once the migration is complete, you'll receive a `.csv` file containing the results.
-This file will be located in the `logs` folder.
+Once the migration is complete, you'll receive a ``.csv`` file containing the results,
+which will be located in the logs folder.
 
 .. code-block::
 
@@ -228,11 +227,11 @@ This file will be located in the `logs` folder.
 The output file format is straightforward. Each line represents an input file, with five columns separated by commas.
 
 Column Details:
-- The first column contains the input file URL or S3 key.
-- The second column displays the file size in bytes.
-- The third column holds the uploaded file UUID or remains empty if the file was not uploaded.
-- The fourth column indicates the status of the file, which can be "uploaded" or "error".
-- The fifth column provides an error message if the file was not uploaded.
+ * The first column contains the input file URL or S3 key.
+ * The second column displays the file size in bytes.
+ * The third column holds the uploaded file UUID or remains empty if the file was not uploaded.
+ * The fourth column indicates the status of the file, which can be "uploaded" or "error".
+ * The fifth column provides an error message if the file was not uploaded.
 
 
 Examples
@@ -284,7 +283,7 @@ remove the `.env` file containing credentials, clear the local database, and the
     $ migro drop
 
 
-Note for windows users
+Note for Windows users
 ----------------------
 
 Currently, there is an issue with terminating the program using CTRL+C on Windows.
