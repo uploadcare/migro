@@ -1,5 +1,5 @@
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoCredentialsError
 from typing import Tuple, Generator, List, Dict
 from migro import settings
 
@@ -21,13 +21,24 @@ class UnexpectedError(S3ClientException):
 
 class S3Client:
     def __init__(self):
-        self.bucket_name = settings.S3_BUCKET_NAME
-        self.s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.S3_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.S3_SECRET_ACCESS_KEY,
-            region_name=settings.S3_REGION,
-        )
+        if settings.S3_ACCESS_KEY_ID \
+                and settings.S3_SECRET_ACCESS_KEY \
+                and settings.S3_REGION \
+                and settings.S3_BUCKET_NAME:
+            self.s3 = boto3.client(
+                's3',
+                aws_access_key_id=settings.S3_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.S3_SECRET_ACCESS_KEY,
+                region_name=settings.S3_REGION,
+            )
+            self.bucket_name = settings.S3_BUCKET_NAME
+        else:
+            try:
+                self.s3 = boto3.client(
+                    's3'
+                )
+            except NoCredentialsError:
+                raise AccessDeniedError("No AWS credentials found.")
 
     def check_credentials(self) -> None:
         """Check if the credentials are valid and have access to list and get objects."""

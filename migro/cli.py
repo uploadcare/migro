@@ -70,31 +70,10 @@ def validate_uc_public_key(ctx, param, value):
     return value
 
 
-def validate_s3_access_key(ctx, param, value):
-    if not value:
-        raise click.BadParameter('AWS S3 access key cannot be empty. '
-                                 'Please specify it through the command line option or environment variable.')
-    return value
-
-
-def validate_s3_secret_key(ctx, param, value):
-    if not value:
-        raise click.BadParameter('AWS S3 secret key cannot be empty. Please specify it through the command line option '
-                                 'or environment variable.')
-    return value
-
-
 def validate_s3_bucket(ctx, param, value):
     if not value:
         raise click.BadParameter('AWS S3 bucket name cannot be empty. Please specify it through the command line '
                                  'option or environment variable.')
-    return value
-
-
-def validate_s3_region(ctx, param, value):
-    if not value:
-        raise click.BadParameter('AWS S3 region cannot be empty. Please specify it through the command line option '
-                                 'or environment variable.')
     return value
 
 
@@ -228,19 +207,19 @@ def urls(file, pub_key, secret_key, upload_base_url, upload_timeout, concurrent_
 
 
 @cli.command()
+@click.argument('bucket_name', type=str, required=False, default=env.get('S3_BUCKET_NAME'), callback=validate_s3_bucket)
 @click.argument('pub_key', type=str, required=False, default=env.get('PUBLIC_KEY'), callback=validate_uc_public_key)
 @click.argument('secret_key', type=str, required=False, default=env.get('SECRET_KEY'))
-@click.option('--s3_bucket_name', type=str, default=env.get('S3_BUCKET_NAME'), callback=validate_s3_bucket)
-@click.option('--s3_access_key_id', type=str, default=env.get('S3_ACCESS_KEY_ID'), callback=validate_s3_access_key)
-@click.option('--s3_secret_access_key', type=str, default=env.get('S3_SECRET_ACCESS_KEY'), callback=validate_s3_secret_key)
-@click.option('--s3_region', type=str, default=env.get('S3_REGION'), callback=validate_s3_region)
+@click.option('--s3_access_key_id', type=str, default=env.get('S3_ACCESS_KEY_ID'))
+@click.option('--s3_secret_access_key', type=str, default=env.get('S3_SECRET_ACCESS_KEY'))
+@click.option('--s3_region', type=str, default=env.get('S3_REGION'))
 @common_options
-def s3(pub_key, secret_key, s3_bucket_name, s3_access_key_id, s3_secret_access_key, s3_region,
+def s3(bucket_name, pub_key, secret_key, s3_access_key_id, s3_secret_access_key, s3_region,
        upload_base_url, upload_timeout, concurrent_uploads, status_check_interval):
     """Migrate files from an S3 bucket to Uploadcare."""
     settings.PUBLIC_KEY = pub_key
     settings.SECRET_KEY = secret_key
-    settings.S3_BUCKET_NAME = s3_bucket_name
+    settings.S3_BUCKET_NAME = bucket_name
     settings.S3_ACCESS_KEY_ID = s3_access_key_id
     settings.S3_SECRET_ACCESS_KEY = s3_secret_access_key
     settings.S3_REGION = s3_region
