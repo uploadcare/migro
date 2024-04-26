@@ -64,7 +64,7 @@ class DBManager:
         """
         Create `attempts` and `files` tables if they don't exist already.
         """
-        sql_create_attempts_table = """
+        self.execute_sql("""
         CREATE TABLE IF NOT EXISTS attempts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             source TEXT NOT NULL,
@@ -75,8 +75,8 @@ class DBManager:
             finished_at DATETIME NULL,
             error BOOLEAN DEFAULT 0
         );
-        """
-        sql_create_files_table = """
+        """)
+        self.execute_sql("""
         CREATE TABLE IF NOT EXISTS files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             path TEXT NOT NULL,
@@ -89,9 +89,7 @@ class DBManager:
             last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(last_attempt_id) REFERENCES attempts(id)
         );
-        """
-        self.execute_sql(sql_create_attempts_table)
-        self.execute_sql(sql_create_files_table)
+        """)
 
     def file_exists(self, source: str, path: str) -> bool:
         """
