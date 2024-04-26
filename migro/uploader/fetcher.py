@@ -19,7 +19,7 @@ from migro.uploader.s3_client import (
 )
 from migro.utils import save_result_to_csv
 from migro.filestack.utils import build_url
-from db.db_manager import DBManager
+from db.db_manager import DBManager, get_db_file
 
 
 def db(func):
@@ -141,9 +141,12 @@ class Fetcher:
         click.echo('Thanks for your interest in Uploadcare.')
         click.echo('Hit us up at help@uploadcare.com in case of any questions.')
 
-    def clear_db(self):
-        """Clear the database."""
-        self.db_manager.clear_database()
+    @staticmethod
+    def remove_db():
+        """Removes the database."""
+        db_file = get_db_file()
+        if get_db_file().exists():
+            db_file.unlink()
 
     @db
     def upload_urls(self, input_file):

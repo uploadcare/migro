@@ -240,7 +240,7 @@ def drop():
     """Drop the database, configuration and logs."""
     if click.confirm('Are you sure you want to drop database, config and logs?'):
         fetcher = Fetcher()
-        fetcher.clear_db()
+        fetcher.remove_db()
         env_file = Path('.env')
         if env_file.exists():
             env_file.unlink()

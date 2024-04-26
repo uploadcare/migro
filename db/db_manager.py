@@ -14,12 +14,19 @@ import click
 from typing import Optional, Tuple
 
 
+def get_db_file() -> Path:
+    """
+    Get the database file.
+    """
+    return Path(__file__).resolve().parent / "migration.db"
+
+
 class DBManager:
     def __init__(self):
         """
         Initialize the DBManager with the database file.
         """
-        self.db_file: Path = Path(__file__).resolve().parent / "migration.db"
+        self.db_file: Path = get_db_file()
         self.conn: Connection = self.create_connection()
         if self.conn is not None:
             self.create_tables()
@@ -84,23 +91,6 @@ class DBManager:
         """
         self.execute_sql(sql_create_attempts_table)
         self.execute_sql(sql_create_files_table)
-
-    def clear_database(self) -> None:
-        """
-        Clear the database.
-        """
-        sql_clear_files_table = """
-        DELETE FROM files;
-        DELETE FROM attempts;
-        """
-        self.execute_sql(sql_clear_files_table)
-        self.conn.commit()
-        # VACUUM the database to free up space
-        try:
-            self.conn.execute('VACUUM;')
-            self.conn.commit()
-        except Error as e:
-            click.secho(f"Error: {e}", fg='red')
 
     def file_exists(self, source: str, path: str) -> bool:
         """
