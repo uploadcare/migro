@@ -21,6 +21,7 @@ class UnexpectedError(S3ClientException):
 
 class S3Client:
     def __init__(self):
+        self.bucket_name = settings.S3_BUCKET_NAME
         if settings.S3_ACCESS_KEY_ID \
                 and settings.S3_SECRET_ACCESS_KEY \
                 and settings.S3_REGION \
@@ -31,7 +32,6 @@ class S3Client:
                 aws_secret_access_key=settings.S3_SECRET_ACCESS_KEY,
                 region_name=settings.S3_REGION,
             )
-            self.bucket_name = settings.S3_BUCKET_NAME
         else:
             try:
                 self.s3 = boto3.client(
