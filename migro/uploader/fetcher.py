@@ -163,11 +163,7 @@ class Fetcher:
         click.echo('Checking the credentials...')
         try:
             self.s3_client.check_credentials()
-        except AccessDeniedError as e:
-            click.secho(e, fg='red')
-            asyncio.ensure_future(session.close())
-            return
-        except UnexpectedError as e:
+        except (AccessDeniedError, UnexpectedError) as e:
             click.secho(e, fg='red')
             asyncio.ensure_future(session.close())
             return
