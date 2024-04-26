@@ -29,10 +29,10 @@ class DBManager:
         """
         self.db_file: Path = get_db_file()
         self.conn: Connection = self.create_connection()
-        if self.conn is not None:
-            self.create_tables()
-        else:
+        if self.conn is None:
             raise Error("Failed to connect to the database.")
+        self.create_tables()
+          
 
     def create_connection(self) -> Connection:
         """
