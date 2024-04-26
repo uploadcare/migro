@@ -210,9 +210,12 @@ def urls(file, pub_key, secret_key, upload_base_url, upload_timeout, concurrent_
 @click.argument('bucket_name', type=str, required=False, default=env.get('S3_BUCKET_NAME'), callback=validate_s3_bucket)
 @click.argument('pub_key', type=str, required=False, default=env.get('PUBLIC_KEY'), callback=validate_uc_public_key)
 @click.argument('secret_key', type=str, required=False, default=env.get('SECRET_KEY'))
-@click.option('--s3_access_key_id', type=str, default=env.get('S3_ACCESS_KEY_ID'))
-@click.option('--s3_secret_access_key', type=str, default=env.get('S3_SECRET_ACCESS_KEY'))
-@click.option('--s3_region', type=str, default=env.get('S3_REGION'))
+@click.option('--s3_access_key_id', type=str, default=env.get('S3_ACCESS_KEY_ID'),
+              help="Your AWS S3 access key ID.")
+@click.option('--s3_secret_access_key', type=str, default=env.get('S3_SECRET_ACCESS_KEY'),
+              help="Your AWS S3 secret access key.")
+@click.option('--s3_region', type=str, default=env.get('S3_REGION'),
+              help="Your S3 region.")
 @common_options
 def s3(bucket_name, pub_key, secret_key, s3_access_key_id, s3_secret_access_key, s3_region,
        upload_base_url, upload_timeout, concurrent_uploads, status_check_interval):
