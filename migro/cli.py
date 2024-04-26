@@ -241,17 +241,17 @@ def drop():
     """Drop the database, configuration and logs."""
     if not click.confirm('Are you sure you want to drop database, config and logs?'):
         return
-        fetcher = Fetcher()
-        fetcher.remove_db()
-        env_file = Path('.env')
-        if env_file.exists():
-            env_file.unlink()
-        logs_dir = Path(__file__).resolve().parent.parent / "logs"
-        if logs_dir.exists():
-            for log in logs_dir.iterdir():
-                log.unlink()
+    fetcher = Fetcher()
+    fetcher.remove_db()
+    env_file = Path('.env')
+    if env_file.exists():
+        env_file.unlink()
+    logs_dir = Path(__file__).resolve().parent.parent / "logs"
+    if logs_dir.exists():
+        for log in logs_dir.iterdir():
+            log.unlink()
 
-        click.secho('All data dropped successfully.', fg='green')
+    click.secho('All data dropped successfully.', fg='green')
 
 
 if __name__ == '__main__':
