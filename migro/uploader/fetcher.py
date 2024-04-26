@@ -150,11 +150,8 @@ class Fetcher:
         """Upload files from a file with URLs."""
         self.source: str = self.SOURCES['URLS']
         with open(input_file, 'r') as f:
-            input_file_content = f.readlines()
-
-        files_list = [build_url(url.strip()) for url in input_file_content]
-        for file in files_list:
-            self.insert_file(file)
+            for line in f:
+                self.insert_file(build_url(line.strip()))
         self.start_upload()
 
     @db
