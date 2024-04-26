@@ -1,6 +1,6 @@
-import sys
 import asyncio
 import signal
+import sys
 
 from migro.uploader.utils import loop
 

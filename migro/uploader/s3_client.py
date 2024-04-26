@@ -1,6 +1,8 @@
+from typing import Dict, Generator, List, Tuple
+
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
-from typing import Tuple, Generator, List, Dict
+
 from migro import settings
 
 

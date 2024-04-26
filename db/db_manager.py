@@ -8,10 +8,11 @@
 """
 
 import sqlite3
-from sqlite3 import Error, Connection
 from pathlib import Path
-import click
+from sqlite3 import Connection, Error
 from typing import Optional, Tuple
+
+import click
 
 
 def get_db_file() -> Path:

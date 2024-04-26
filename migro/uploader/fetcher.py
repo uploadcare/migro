@@ -7,19 +7,17 @@
 
 """
 import asyncio
-from tqdm import tqdm
-import click
 
-from migro.uploader.worker import Uploader, Events
-from migro.uploader.utils import loop, session
-from migro.uploader.s3_client import (
-    S3Client,
-    AccessDeniedError,
-    UnexpectedError
-)
-from migro.utils import save_result_to_csv
-from migro.filestack.utils import build_url
+import click
+from tqdm import tqdm
+
 from db.db_manager import DBManager, get_db_file
+from migro.filestack.utils import build_url
+from migro.uploader.s3_client import (AccessDeniedError, S3Client,
+                                      UnexpectedError)
+from migro.uploader.utils import loop, session
+from migro.uploader.worker import Events, Uploader
+from migro.utils import save_result_to_csv
 
 
 def db(func):

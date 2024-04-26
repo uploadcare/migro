@@ -9,13 +9,13 @@
 import hashlib
 import hmac
 import time
-
-from aiohttp import ClientSession, TCPConnector
 from asyncio import get_event_loop
 from urllib.parse import urljoin
 
-from migro import settings, __version__ as version
+from aiohttp import ClientSession, TCPConnector
 
+from migro import __version__ as version
+from migro import settings
 
 loop = get_event_loop()
 session = ClientSession(connector=TCPConnector(verify_ssl=False, loop=loop))
