@@ -161,13 +161,13 @@ To initiate the migration, execute the following command:
 
 .. code-block:: console
 
-    $ migro s3 <PUBLIC_KEY> [<SECRET_KEY>] [<OPTIONS>]
+    $ migro s3 <BUCKET_NAME> <PUBLIC_KEY> [<SECRET_KEY>] [<OPTIONS>]
 
 For example:
 
 .. code-block:: console
 
-    $ migro s3 <PUBLIC_KEY> --s3_bucket_name <BUCKET_NAME> --s3_access_key_id <ACCESS_KEY_ID> --s3_secret_access_key <SECRET_ACCESS_KEY> --s3_region <REGION>
+    $ migro s3 <BUCKET_NAME> <PUBLIC_KEY> --s3_access_key_id <ACCESS_KEY_ID> --s3_secret_access_key <SECRET_ACCESS_KEY> --s3_region <REGION>
 
 
 Options:
@@ -177,8 +177,6 @@ Options:
 
   -h, --help                        Show this help and quit.
 
-  --s3_bucket_name STRING           Name of the AWS S3 bucket to migrate files from.
-
   --s3_access_key_id STRING         AWS Access Key ID for accessing the S3 bucket.
 
   --s3_secret_access_key STRING     AWS Secret Access Key for accessing the S3 bucket.
@@ -186,6 +184,11 @@ Options:
   --s3_region STRING                AWS region where the S3 bucket is located.
 
 Each option can be set beforehand using the `migro init` command.
+
+Note:
+    Utilizing ``boto3``, Migro attempts to use the
+    `default AWS credentials <https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#configuring-credentials>`_
+    when they are not specified during the initialization step or via command line.
 
 
 Usage with file list
