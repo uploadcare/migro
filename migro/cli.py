@@ -239,7 +239,8 @@ def s3(bucket_name, pub_key, secret_key, s3_access_key_id, s3_secret_access_key,
 @cli.command()
 def drop():
     """Drop the database, configuration and logs."""
-    if click.confirm('Are you sure you want to drop database, config and logs?'):
+    if not click.confirm('Are you sure you want to drop database, config and logs?'):
+        return
         fetcher = Fetcher()
         fetcher.remove_db()
         env_file = Path('.env')
