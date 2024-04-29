@@ -188,7 +188,7 @@ Each option can be set beforehand using the `migro init` command.
 Note:
     Utilizing ``boto3``, Migro attempts to use the
     `default AWS credentials <https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#configuring-credentials>`_
-    when they are not specified during the initialization step or via command line.
+    if they are not specified during the initialization step or via command line.
 
 
 Usage with file list
