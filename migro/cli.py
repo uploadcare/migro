@@ -153,7 +153,7 @@ def cli(ctx):
 @click.option(
     '--upload_timeout',
     help="Number of seconds to wait till the file will be processed by `from_url` upload.",
-    type=int
+    type=float
 )
 @click.option(
     '--concurrent_uploads',
@@ -163,7 +163,7 @@ def cli(ctx):
 @click.option(
     '--status_check_interval',
     help="Number of seconds in between status check requests.",
-    type=int
+    type=float
 )
 def init(s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_region, uc_public_key, uc_secret_key,
          upload_base_url, upload_timeout, concurrent_uploads, status_check_interval):
