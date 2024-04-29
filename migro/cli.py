@@ -35,11 +35,11 @@ def common_options(func):
     @wraps(func)
     @click.option('--upload_base_url', help="Base URL for uploads.", type=str, default=env.get('UPLOAD_BASE'))
     @click.option('--upload_timeout',
-                  help="Number of seconds to wait till the file will be processed by `from_url` upload.", type=int,
+                  help="Number of seconds to wait till the file will be processed by `from_url` upload.", type=float,
                   default=env.get('FROM_URL_TIMEOUT'))
     @click.option('--concurrent_uploads', help="Maximum number of upload requests running in 'parallel'.", type=int,
                   default=env.get('MAX_CONCURRENT_UPLOADS'))
-    @click.option('--status_check_interval', help="Number of seconds in between status check requests.", type=int,
+    @click.option('--status_check_interval', help="Number of seconds in between status check requests.", type=float,
                   default=env.get('STATUS_CHECK_INTERVAL'))
     def new_func(*args, **kwargs):
         return func(*args, **kwargs)
