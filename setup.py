@@ -36,7 +36,7 @@ setup(
         'click==8.1.7',
         'click==8.1.3',
         'python-dateutil==2.8.2',
-        'tqdm==4.66.1',
+        'tqdm==4.66.2',
         'colorama==0.4.6',
     ],
     include_package_data=True,
