@@ -142,6 +142,7 @@ To ensure proper functionality, set the following minimal permissions for your A
         "Version": "2012-10-17",
         "Statement": [
             {
+                "Principal": "*",
                 "Effect": "Allow",
                 "Action": [
                     "s3:GetObject",
