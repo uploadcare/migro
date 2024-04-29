@@ -73,14 +73,14 @@ Once the ``.env`` file is created, you can edit it manually if needed.
 
 .. code-block:: console
 
-  $ migro init --public_key <PUBLIC_KEY> --secret_key <SECRET_KEY>
+  $ migro init --uc_public_key <PUBLIC_KEY> --uc_secret_key <SECRET_KEY>
 
 If you run the command twice or more times, the tool will update the existing
 credentials or add new ones. For instance, if you run the following command:
 
 .. code-block:: console
 
-  $ migro init --secret_key <SECRET_KEY>
+  $ migro init --uc_secret_key <SECRET_KEY>
 
 The tool will update the secret key but leave the public key unchanged.
 
@@ -244,7 +244,7 @@ Here's how you set up the tool for the first time:
 
 .. code-block:: console
 
-    $ migro init --public_key <PUBLIC_KEY> --s3_access_key_id <S3_ACCESS_KEY> --s3_secret_access_key <S3_SECRET_KEY> --s3_bucket_name <S3_BUCKET_NAME> --s3_region <S3_REGION>
+    $ migro init --uc_public_key <PUBLIC_KEY> --s3_access_key_id <S3_ACCESS_KEY> --s3_secret_access_key <S3_SECRET_KEY> --s3_bucket_name <S3_BUCKET_NAME> --s3_region <S3_REGION>
 
 .. code-block::
 
