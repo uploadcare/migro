@@ -15,6 +15,7 @@ with open('migro/__init__.py', 'r') as fd:
 
 long_description = open('README.rst', encoding='utf-8').read()
 
+
 setup(
     name='uploadcare-migro',
     version=version,
@@ -52,5 +53,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ]
 )
