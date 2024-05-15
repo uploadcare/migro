@@ -34,7 +34,6 @@ setup(
     install_requires=[
         'aiohttp==3.9.5',
         'click==8.1.7',
-        'click==8.1.3',
         'python-dateutil==2.8.2',
         'tqdm==4.66.4',
         'colorama==0.4.6',
