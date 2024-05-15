@@ -9,13 +9,13 @@
 import hashlib
 import hmac
 import time
-
-from aiohttp import ClientSession, TCPConnector
 from asyncio import get_event_loop
 from urllib.parse import urljoin
 
-from migro import settings, __version__ as version
+from aiohttp import ClientSession, TCPConnector
 
+from migro import __version__ as version
+from migro import settings
 
 loop = get_event_loop()
 session = ClientSession(connector=TCPConnector(verify_ssl=False, loop=loop))
@@ -42,11 +42,11 @@ async def request(path, params=None):
     params['pub_key'] = settings.PUBLIC_KEY
     params['UPLOADCARE_PUB_KEY'] = settings.PUBLIC_KEY
 
-    if (settings.SECRET_KEY):
+    if settings.SECRET_KEY:
         expire_timestamp = generate_expire_timestamp()
         upload_signature = generate_secure_signature(settings.SECRET_KEY, expire_timestamp)
 
-        params['signature'] =  upload_signature
+        params['signature'] = upload_signature
         params['expire'] = expire_timestamp
 
     response = await session.request(

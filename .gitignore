@@ -48,3 +48,5 @@ target/
 .venv
 venv/
 ENV/
+db/*.db
+logs

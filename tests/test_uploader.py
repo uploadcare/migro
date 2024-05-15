@@ -1,9 +1,9 @@
 import asyncio
 from unittest.mock import AsyncMock
 
+from migro import __version__, settings
 from migro.uploader.utils import loop, request, session
-from migro.uploader.worker import Uploader, Events
-from migro import settings, __version__
+from migro.uploader.worker import Events, Uploader
 
 
 def test_uploader(mock_session):
