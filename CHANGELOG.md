@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [2.0.1] - 2024-09-25
 
 ### Fixed
-- Metadata error (#241)
+- Metadata error: Corrected README file name in project configuration (#241)
 
 ## [2.0.0] - 2024-05-15
 
