@@ -15,6 +15,7 @@ with open('migro/__init__.py', 'r') as fd:
 
 long_description = open('README.rst', encoding='utf-8').read()
 
+
 setup(
     name='uploadcare-migro',
     version=version,
@@ -35,9 +36,9 @@ setup(
         'aiohttp==3.9.5',
         'click==8.1.7',
         'python-dateutil==2.9.0.post0',
-        'tqdm==4.66.4',
+        'tqdm==4.66.5',
         'colorama==0.4.6',
-        'boto3==1.34.80',
+        'boto3==1.34.159',
         'botocore==1.34.80',
         'python-dotenv==1.0.1'
     ],
@@ -52,5 +53,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ]
 )
