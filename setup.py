@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'aiohttp==3.9.5',
-        'click==8.1.7',
+        'click==8.1.8',
         'python-dateutil==2.9.0.post0',
         'tqdm==4.66.5',
         'colorama==0.4.6',
