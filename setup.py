@@ -36,7 +36,7 @@ setup(
         'aiohttp==3.9.5',
         'click==8.1.7',
         'python-dateutil==2.9.0.post0',
-        'tqdm==4.66.5',
+        'tqdm==4.67.1',
         'colorama==0.4.6',
         'boto3==1.34.159',
         'botocore==1.34.80',
