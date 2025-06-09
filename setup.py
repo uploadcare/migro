@@ -33,7 +33,7 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'aiohttp==3.9.5',
+        'aiohttp==3.12.11',
         'click==8.1.7',
         'python-dateutil==2.9.0.post0',
         'tqdm==4.66.5',
