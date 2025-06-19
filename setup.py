@@ -38,7 +38,7 @@ setup(
         'python-dateutil==2.9.0.post0',
         'tqdm==4.66.5',
         'colorama==0.4.6',
-        'boto3==1.34.159',
+        'boto3==1.38.39',
         'botocore==1.34.80',
         'python-dotenv==1.0.1'
     ],
