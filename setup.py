@@ -39,7 +39,7 @@ setup(
         'tqdm==4.66.5',
         'colorama==0.4.6',
         'boto3==1.34.159',
-        'botocore==1.34.80',
+        'botocore==1.38.43',
         'python-dotenv==1.0.1'
     ],
     include_package_data=True,
