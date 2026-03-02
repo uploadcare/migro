@@ -33,14 +33,14 @@ setup(
     },
     zip_safe=False,
     install_requires=[
-        'aiohttp==3.9.5',
-        'click==8.1.7',
+        'aiohttp==3.13.3',
+        'click==8.3.1',
         'python-dateutil==2.9.0.post0',
-        'tqdm==4.66.5',
+        'tqdm==4.67.3',
         'colorama==0.4.6',
-        'boto3==1.34.159',
-        'botocore==1.34.80',
-        'python-dotenv==1.0.1'
+        'boto3==1.42.58',
+        'botocore==1.42.58',
+        'python-dotenv==1.2.1'
     ],
     include_package_data=True,
     classifiers=[
@@ -50,10 +50,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
     ]
 )
