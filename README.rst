@@ -26,7 +26,7 @@ You will also receive details on the status of each processed file and any error
 Installation
 ------------
 
-This utility requires Python version 3.8 or later.
+This utility requires Python version 3.10 or later.
 
 In order to install ``migro``, run:
 

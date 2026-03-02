@@ -9,7 +9,6 @@
 import hashlib
 import hmac
 import time
-from asyncio import get_event_loop
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession, TCPConnector
@@ -17,8 +16,22 @@ from aiohttp import ClientSession, TCPConnector
 from migro import __version__ as version
 from migro import settings
 
-loop = get_event_loop()
-session = ClientSession(connector=TCPConnector(verify_ssl=False, loop=loop))
+session = None
+
+
+def get_session():
+    global session
+    if session is None or session.closed:
+        # Create session only when we're already inside an async context.
+        session = ClientSession(connector=TCPConnector(ssl=False))
+    return session
+
+
+async def close_session():
+    global session
+    if session is not None and not session.closed:
+        await session.close()
+    session = None
 
 
 async def request(path, params=None):
@@ -49,7 +62,8 @@ async def request(path, params=None):
         params['signature'] = upload_signature
         params['expire'] = expire_timestamp
 
-    response = await session.request(
+    current_session = get_session()
+    response = await current_session.request(
         method='get',
         url=url,
         headers=headers,

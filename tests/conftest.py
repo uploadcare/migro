@@ -3,7 +3,6 @@ import asyncio
 import pytest
 
 from migro.uploader import utils
-from migro.uploader.utils import session
 
 
 class MockResponse:
@@ -24,9 +23,13 @@ class MockResponse:
 class Session:
     def __init__(self, response):
         self._response = response
+        self.closed = False
 
     async def request(self, *args, **kwargs):
         return self._response
+
+    async def close(self):
+        self.closed = True
 
 
 @pytest.fixture
@@ -50,4 +53,5 @@ def mock_session():
 
 @pytest.fixture(scope='session', autouse=True)
 def close_session():
-    asyncio.ensure_future(session.close())
+    yield
+    asyncio.run(utils.close_session())

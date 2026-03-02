@@ -1,48 +1,51 @@
 import asyncio
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 from migro import __version__, settings
-from migro.uploader.utils import loop, request, session
+from migro.uploader.utils import request
 from migro.uploader.worker import Events, Uploader
 
 
 def test_uploader(mock_session):
     successful = []
     failed = []
-
+    loop = asyncio.new_event_loop()
     uploader = Uploader(loop=loop)
 
-    uploader.on(
-        Events.UPLOAD_ERROR,
-        Events.DOWNLOAD_ERROR,
-        callback=lambda event: failed.append(event['file']),
-    )
+    try:
+        uploader.on(
+            Events.UPLOAD_ERROR,
+            Events.DOWNLOAD_ERROR,
+            callback=lambda event: failed.append(event['file']),
+        )
 
-    uploader.on(
-        Events.DOWNLOAD_COMPLETE,
-        callback=lambda event: successful.append(event['file']),
-    )
+        uploader.on(
+            Events.DOWNLOAD_COMPLETE,
+            callback=lambda event: successful.append(event['file']),
+        )
 
-    urls = ['http://file-url']
-    loop.run_until_complete(uploader.process(urls))
+        urls = ['http://file-url']
+        loop.run_until_complete(uploader.process(urls))
 
-    uploader.shutdown()
+        uploader.shutdown()
 
-    assert successful
-    assert not failed
+        assert successful
+        assert not failed
+    finally:
+        if not loop.is_closed():
+            loop.close()
 
 
-def test_headers():
+@patch("migro.uploader.utils.get_session")
+def test_headers(mock_get_session):
     settings.PUBLIC_KEY = "public"
 
-    mock = AsyncMock(return_value="ok")
-
-    original_request = session.request
-    session.request = mock
-    resp = asyncio.run(request('path'))
-    session.request = original_request
+    request_mock = AsyncMock(return_value="ok")
+    session_stub = type("SessionStub", (), {"request": request_mock})()
+    mock_get_session.return_value = session_stub
+    resp = asyncio.run(request("path"))
 
     expected_ua = f"Migro/{__version__}/public"
-    assert expected_ua == mock.call_args.kwargs["headers"]["User-Agent"]
+    assert expected_ua == request_mock.call_args.kwargs["headers"]["User-Agent"]
 
     assert "ok" == resp
