@@ -40,7 +40,7 @@ setup(
         'colorama==0.4.6',
         'boto3==1.42.58',
         'botocore==1.42.58',
-        'python-dotenv==1.2.1'
+        'python-dotenv==1.2.2'
     ],
     include_package_data=True,
     classifiers=[
